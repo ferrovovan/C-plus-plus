@@ -2,7 +2,11 @@
 
 int Time::object_count = 0;
 
-Time::Time(){ hours = 0; minutes = 0; seconds = 0; }
+Time::Time() {
+	hours = 0; minutes = 0; seconds = 0;
+	++object_count;
+	std::cout << "Constructor called. Current object count: " << object_count << "\n";
+}
 Time::Time(int h, int m, int s) : hours(h), minutes(m), seconds(s) {
 	++object_count;
 	Normalize();  // Нормализация времени после инициализации
