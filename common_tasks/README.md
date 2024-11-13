@@ -9,10 +9,10 @@
 make
 find . -type f -executable -print -exec ./{} +
 ```
- - Или через CMake:
+ - Если в папке существует `CMakeLists.txt`:
 ```
 ./scripts/build.sh
-find ./build -type f -executable -print -exec ./{} +
+./scripts/run_main.sh
 ```
 
 ## Условия задач:
@@ -221,3 +221,128 @@ int main() {
 
 
 ### 6.2. Обработка ошибок
+#### Теория
+Блок ловли исключений
+```
+try {
+    инструкции, которые могут вызвать исключение
+}
+catch(объявление_исключения) {
+    обработка исключения
+}
+```
+Вводный пример
+```
+#include <iostream>
+double divide(int a, int b) {
+    if (b)
+        return a / b;
+    throw std::string{"Division by zero!"};
+}
+
+int main() {
+    int x{500};
+    int y{};
+    try {
+        double z {divide(x, y)};
+        std::cout << z << std::endl;
+    }
+    // catch (std::string error_message)
+    catch (const std::string& error_message)
+    {
+        std::cout << error_message << std::endl;
+    }
+    std::cout << "The End..." << std::endl;
+}
+// Division by zero!
+// The End...
+```
+Пример обработки нескольких видов исключений
+```
+#include <iostream>
+double divide(int a, int b){
+    if(!b) { throw 0; } // если b == 0
+    if(b > a) { throw "The second number is greater than the first one"; }
+    return a / b;
+}
+
+void test(int a, int b) {
+    try {
+        double result {divide(a, b)};
+        std::cout << result << std::endl;
+    }
+    catch (int code) {  
+        std::cout << "Error code: " << code << std::endl;
+    }
+    catch (const char* error_message) {
+        std::cout << error_message << std::endl;
+    }
+}
+
+int main() {
+    test(100, 20); // 5
+    test(100, 0); // Error code: 0
+    test(100, 1000); // The second number is greater than the first one
+}
+```
+Использование специального объекта для исключения.  
+В данном примере - структуры `struct`.
+```
+#include <iostream>
+struct WrongAgeException {
+    int age;
+    WrongAgeException(int age): age(age){};
+};
+int ReadAge() {
+    int age;
+    std::cin >> age;
+    if (age < 0 || age >= 128) { throw WrongAgeException(age); }
+    return age;
+}
+int main(){
+    try {
+        int age = ReadAge(); // может сгенерировать исключение
+    } catch (const WrongAgeException& ex) { // ловим объект исключения
+        std::cerr << "Age is not correct: " << ex.age << "\n";
+        return 1; // выходим из функции main с ненулевым кодом возврата
+    }
+}
+```
+Использование стандартного потока ошибок 
+```
+int ReadAge() {
+    std::cin.exceptions(std::istream::failbit);
+    int age;
+    std::cin >> age;
+    return age;
+}
+
+int main() {
+    try {
+        age = ReadAge(); // может сгенерировать исключения разных типов
+    } catch (const std::istream::failure& ex) {
+        std::cerr << "Failed to read age: " << ex.what() << "\n";
+        return 1;
+    } catch (...) {
+        std::cerr << "Some other exception\n";
+        return 1;
+    }
+}
+```
+**Уровни Гарантии безопасности исключений**
+|   Уровень                         | Инструменты                                                 |
+|-----------------------------------|-------------------------------------------------------------|
+| 1. Гарантия отсутствия сбоев.     | Только инструменты, обеспечивающие отсутствие исключений.   |
+| 2. Строгая гарантия безопасности. | 1 + инструменты для атомарности (копии, транзакции).        |
+| 3. Базовая гарантия безопасности. | 1 + 2 + базовые операции с гарантией корректного состояния. |
+| 4. Отсутствие гарантий.           | Всё что угодно.                                             |
+
+
+#### Задания
+Дополнение класса `Time` генерацией исключений:
+1. Определить, какие функции и конструкторы должны генерировать исключения.  
+  * Например, исключение может создавать стандартный поток вывода `std::cout`.
+2. функции не вызывающие исключения отметить ключевым словом `noexcept`.
+(Хотя компилятор проставляет ключевые слова сам.)
+3. Реализовать генерацию исключений и их обработку в `main()`.
+4. Намеренно создать исключение. Проанализировать вывод сообщений конструкторов/деструктора.
