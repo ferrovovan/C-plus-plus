@@ -1,7 +1,6 @@
 #include "Time.h"
 
-int main()
-{
+void do_work() {
 	Time t;
 	t.SetHours(1);
 	Time t2 = t;
@@ -18,4 +17,8 @@ int main()
 	t3 = t;
 	t3.SetHours(3);
 	t3.PrintTime();
+}
+
+int main() {
+	do_work();
 }

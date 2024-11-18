@@ -2,15 +2,29 @@
 
 int Time::object_count = 0;
 
-Time::Time(int h, int m, int s) : hours(h), minutes(m), seconds(s) {
+Time::Time() { // Default Constructor
+	std::cout << "Default Constructor called. Current object count: " << object_count << "\n";
+	hours = 0; minutes = 0; seconds = 0;
 	++object_count;
-	Normalize();  // Нормализация времени после инициализации
-	std::cout << "Constructor called. Current object count: " << object_count << "\n";
 }
 
-Time::~Time() {
-	--object_count;
+Time::Time(int h, int m, int s) : hours(h), minutes(m), seconds(s) {
+	std::cout << "Constructor called. Current object count: " << object_count << "\n";
+	Normalize();  // Нормализация времени после инициализации
+	++object_count;
+}
+
+Time(const Time& other) { // Copy Constructor
+	std::cout << "Copy Constructor called. Current object count: " << object_count << "\n";
+	this->seconds = other->seconds;
+	this->minutes = other->minutes;
+	this->hours = other->hours;
+	++object_count;
+}
+
+Time::~Time() { // Destructor
 	std::cout << "Destructor called. Current object count: " << object_count << "\n";
+	--object_count;
 }
 
 void Time::Normalize() {
@@ -31,15 +45,6 @@ void Time::Normalize() {
 	}
 
 	hours = (hours % 24 + 24) % 24;
-}
-
-// Приведение в секунды
-int Time::ToSeconds() const {
-	return hours * 3600 + minutes * 60 + seconds;
-}
-// Присваивание часов
-void Time::SetHours(int hours) {
-	this->hours = hours;
 }
 
 // Операторы сложения

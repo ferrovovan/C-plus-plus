@@ -5,10 +5,10 @@ private:
 	int hours, minutes, seconds;
 	static int object_count;
 public:
-	Time(){};
+	Time(); // Default Constructor
 	Time(int h, int m, int s);
-	Time(const Time& t): Time(t.hours, t.minutes, t.seconds){}
-	~Time();
+	Time(const Time& t); // Copy Constructor
+	~Time(); // Destructor
 
 	Time& operator = (const Time& other){
 		this->hours = other.hours; // явное указания на член класса
@@ -31,12 +31,12 @@ public:
 		return *this;
 	}
 
-	
-	// Оператор вычитания
-	Time operator - (const Time& other) const {
-		Time result(hours - other.hours, minutes - other.minutes, seconds - other.seconds);
-		result.Normalize();
-		return result;
+	Time operator + (const Time& other) const { // Оператор сложения
+		return Time(hours + other.hours, minutes + other.minutes, seconds + other.seconds);
+	}
+
+	Time operator - (const Time& other) const { // Оператор вычитания
+		return Time(hours - other.hours, minutes - other.minutes, seconds - other.seconds);
 	}
 
 	// Оператор вычитания с присваиванием
@@ -60,13 +60,16 @@ public:
 	}
 
 	void Normalize();
-	int ToSeconds() const;
-	void SetHours(int hours);
+	int ToSeconds() const { return hours * 3600 + minutes * 60 + seconds; }
+	void SetHours(int hours){ this->hours = hours; }
+	void SetMinutes(int minutes){ this->minutes = minutes; }
+	void SetSeconds(int seconds{ this->seconds = seconds; };
+
 	void PrintTime(){
 		std::cout << "H:" << this->GetHours()
-			<< " M:" << this->GetMinutes()
-			<< " S:" << this->GetSeconds()
-			<< std::endl;
+		         << " M:" << this->GetMinutes()
+		         << " S:" << this->GetSeconds()
+		         << std::endl;
 	}
 };
 

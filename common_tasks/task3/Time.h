@@ -4,10 +4,11 @@ class Time {
 private:
 	int hours, minutes, seconds;
 public:
-	Time(){}; // defaults
-	Time(int h, int m, int s);
+	Time(){}; // конструктор изначальный
+	Time(int h, int m, int s); // перегрузка конструктора
 	//Time(const Time&); // конструктор копирования
-	// делегирование конструктора
+
+	// приём "делегирование конструктора" для конструктора копирования.
 	Time(const Time& t): Time(t.hours, t.minutes, t.seconds){}
 	~Time(){} // деструктор
 
