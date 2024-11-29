@@ -3,13 +3,13 @@
 
 ## Запуск
 Чтобы проверить задание, нужно перейти в папку с номером задания и:
- - Или запустить скрипт, например ` ./run.sh `, ` ./scripts/run_tests.sh`
- - Или собрать проект через Makefile и запустить:
+- Или запустить скрипт, например ` ./run.sh `, ` ./scripts/run_tests.sh`
+- Или собрать проект через Makefile и запустить:
 ```
 make
 find . -type f -executable -print -exec ./{} +
 ```
- - Если в папке существует `CMakeLists.txt`:
+- Если в папке существует `CMakeLists.txt`:
 ```
 ./scripts/build.sh
 ./scripts/run_main.sh
@@ -167,21 +167,21 @@ int main()
 ```
 #include <memory> // для умных указателей
 int main() {
-    int* ptr = new int(17); // обычный указатель
-    delete ptr; // важно не забыть!
-    
-    // А это — умный указатель
-    std::unique_ptr<int> smart = std::make_unique<int>(17); // вместо new int(17)
-    //эквивалентно  std::unique_ptr<int> smart { std::make_unique<int>(17) };
+	int* ptr = new int(17); // обычный указатель
+	delete ptr; // важно не забыть!
+	
+	// А это — умный указатель
+	std::unique_ptr<int> smart = std::make_unique<int>(17); // вместо new int(17)
+	//эквивалентно  std::unique_ptr<int> smart { std::make_unique<int>(17) };
 
-    // Можно работать как с обычным указателем — у него перегружены соответствующие операторы:
-    std::cout << *smart << "\n"; // 17
-    // auto ptr2 = ptr1; // копирование запрещено
-    // ptr.reset(); // устанавливает nullptr
-    
-    unsigned n{5}; // размер массива
-    auto pnumbers { std::make_unique<int[]>(n) }; // массив {0, 0, 0, 0, 0}    
-    pnumbers[1] = 11; // изменяем значение
+	// Можно работать как с обычным указателем — у него перегружены соответствующие операторы:
+	std::cout << *smart << "\n"; // 17
+	// auto ptr2 = ptr1; // копирование запрещено
+	// ptr.reset(); // устанавливает nullptr
+	
+	unsigned n{5}; // размер массива
+	auto pnumbers { std::make_unique<int[]>(n) }; // массив {0, 0, 0, 0, 0}    
+	pnumbers[1] = 11; // изменяем значение
 }
 // вызывать delete не надо, выделенная память освободится при выходе из блока
 ```
@@ -193,22 +193,22 @@ int main() {
 #include <iostream> // для ввода-вывода
 #include <memory> // для умных указателей
 int main() {
-    std::shared_ptr<int> ptr1 = std::make_shared<int>(17);
-    std::cout << *ptr1 << "\n"; // 17
-    std::cout << ptr1.use_count() << "\n"; // 1
-    auto ptr2 = ptr1; // копирование разрешено!
-    std::cout << *ptr1 << "\n"; // 17
-    std::cout << *ptr2 << "\n"; // 17 — это всё тот же объект
-    std::cout << ptr1.use_count() << "\n"; // 2
-    std::cout << ptr2.use_count() << "\n"; // 2
-    std::shared_ptr<int> ptr3;
-    std::cout << ptr3.use_count() << "\n"; // 0
-    
-    ptr3 = ptr1; // присваивание тоже разрешено!
-    std::cout << *ptr3 << "\n"; // 17
-    std::cout << ptr1.use_count() << "\n"; // 3
-    std::cout << ptr2.use_count() << "\n"; // 3
-    std::cout << ptr3.use_count() << "\n"; // 3
+	std::shared_ptr<int> ptr1 = std::make_shared<int>(17);
+	std::cout << *ptr1 << "\n"; // 17
+	std::cout << ptr1.use_count() << "\n"; // 1
+	auto ptr2 = ptr1; // копирование разрешено!
+	std::cout << *ptr1 << "\n"; // 17
+	std::cout << *ptr2 << "\n"; // 17 — это всё тот же объект
+	std::cout << ptr1.use_count() << "\n"; // 2
+	std::cout << ptr2.use_count() << "\n"; // 2
+	std::shared_ptr<int> ptr3;
+	std::cout << ptr3.use_count() << "\n"; // 0
+	
+	ptr3 = ptr1; // присваивание тоже разрешено!
+	std::cout << *ptr3 << "\n"; // 17
+	std::cout << ptr1.use_count() << "\n"; // 3
+	std::cout << ptr2.use_count() << "\n"; // 3
+	std::cout << ptr3.use_count() << "\n"; // 3
 }
 ```
 *Примечание:* Для подключения умных указателей использовать `#include <memory>`.
@@ -225,34 +225,34 @@ int main() {
 Блок ловли исключений
 ```
 try {
-    инструкции, которые могут вызвать исключение
+	инструкции, которые могут вызвать исключение
 }
 catch(объявление_исключения) {
-    обработка исключения
+	обработка исключения
 }
 ```
 Вводный пример
 ```
 #include <iostream>
 double divide(int a, int b) {
-    if (b)
-        return a / b;
-    throw std::string{"Division by zero!"};
+	if (b)
+		return a / b;
+	throw std::string{"Division by zero!"};
 }
 
 int main() {
-    int x{500};
-    int y{};
-    try {
-        double z {divide(x, y)};
-        std::cout << z << std::endl;
-    }
-    // catch (std::string error_message)
-    catch (const std::string& error_message)
-    {
-        std::cout << error_message << std::endl;
-    }
-    std::cout << "The End..." << std::endl;
+	int x{500};
+	int y{};
+	try {
+		double z {divide(x, y)};
+		std::cout << z << std::endl;
+	}
+	// catch (std::string error_message)
+	catch (const std::string& error_message)
+	{
+		std::cout << error_message << std::endl;
+	}
+	std::cout << "The End..." << std::endl;
 }
 // Division by zero!
 // The End...
@@ -261,28 +261,28 @@ int main() {
 ```
 #include <iostream>
 double divide(int a, int b){
-    if(!b) { throw 0; } // если b == 0
-    if(b > a) { throw "The second number is greater than the first one"; }
-    return a / b;
+	if(!b) { throw 0; } // если b == 0
+	if(b > a) { throw "The second number is greater than the first one"; }
+	return a / b;
 }
 
 void test(int a, int b) {
-    try {
-        double result {divide(a, b)};
-        std::cout << result << std::endl;
-    }
-    catch (int code) {  
-        std::cout << "Error code: " << code << std::endl;
-    }
-    catch (const char* error_message) {
-        std::cout << error_message << std::endl;
-    }
+	try {
+		double result {divide(a, b)};
+		std::cout << result << std::endl;
+	}
+	catch (int code) {  
+		std::cout << "Error code: " << code << std::endl;
+	}
+	catch (const char* error_message) {
+		std::cout << error_message << std::endl;
+	}
 }
 
 int main() {
-    test(100, 20); // 5
-    test(100, 0); // Error code: 0
-    test(100, 1000); // The second number is greater than the first one
+	test(100, 20); // 5
+	test(100, 0); // Error code: 0
+	test(100, 1000); // The second number is greater than the first one
 }
 ```
 Использование специального объекта для исключения.  
@@ -290,43 +290,43 @@ int main() {
 ```
 #include <iostream>
 struct WrongAgeException {
-    int age;
-    WrongAgeException(int age): age(age){};
+	int age;
+	WrongAgeException(int age): age(age){};
 };
 int ReadAge() {
-    int age;
-    std::cin >> age;
-    if (age < 0 || age >= 128) { throw WrongAgeException(age); }
-    return age;
+	int age;
+	std::cin >> age;
+	if (age < 0 || age >= 128) { throw WrongAgeException(age); }
+	return age;
 }
 int main(){
-    try {
-        int age = ReadAge(); // может сгенерировать исключение
-    } catch (const WrongAgeException& ex) { // ловим объект исключения
-        std::cerr << "Age is not correct: " << ex.age << "\n";
-        return 1; // выходим из функции main с ненулевым кодом возврата
-    }
+	try {
+		int age = ReadAge(); // может сгенерировать исключение
+	} catch (const WrongAgeException& ex) { // ловим объект исключения
+		std::cerr << "Age is not correct: " << ex.age << "\n";
+		return 1; // выходим из функции main с ненулевым кодом возврата
+	}
 }
 ```
 Использование стандартного потока ошибок 
 ```
 int ReadAge() {
-    std::cin.exceptions(std::istream::failbit);
-    int age;
-    std::cin >> age;
-    return age;
+	std::cin.exceptions(std::istream::failbit);
+	int age;
+	std::cin >> age;
+	return age;
 }
 
 int main() {
-    try {
-        age = ReadAge(); // может сгенерировать исключения разных типов
-    } catch (const std::istream::failure& ex) {
-        std::cerr << "Failed to read age: " << ex.what() << "\n";
-        return 1;
-    } catch (...) {
-        std::cerr << "Some other exception\n";
-        return 1;
-    }
+	try {
+		age = ReadAge(); // может сгенерировать исключения разных типов
+	} catch (const std::istream::failure& ex) {
+		std::cerr << "Failed to read age: " << ex.what() << "\n";
+		return 1;
+	} catch (...) {
+		std::cerr << "Some other exception\n";
+		return 1;
+	}
 }
 ```
 **Уровни Гарантии безопасности исключений**
@@ -341,7 +341,7 @@ int main() {
 #### Задания
 Дополнение класса `Time` генерацией исключений:
 1. Определить, какие функции и конструкторы должны генерировать исключения.  
-  * Например, исключение может создавать стандартный поток вывода `std::cout`.
+* Например, исключение может создавать стандартный поток вывода `std::cout`.
 2. функции не вызывающие исключения отметить ключевым словом `noexcept`.
 (Хотя компилятор проставляет ключевые слова сам.)
 3. Реализовать генерацию исключений и их обработку в `main()`.
@@ -356,19 +356,19 @@ int main() {
 #include <iostream>
 class Temperature {
 private:
-    int m_temp { 0 };
+	int m_temp { 0 };
 public:
-    explicit Temperature(int temp) : m_temp { temp } { }
-    friend void printWeather(const Temperature& temperature); // объявление friend функции
+	explicit Temperature(int temp) : m_temp { temp } { }
+	friend void printWeather(const Temperature& temperature); // объявление friend функции
 };
 
 void printWeather(const Temperature& temperature) {
-    std::cout << "The temperature is " << temperature.m_temp << std::endl; // использование приватного поля
+	std::cout << "The temperature is " << temperature.m_temp << std::endl; // использование приватного поля
 }
 int main() {
-    Temperature temp { -2 };
-    printWeather(temp);
-    return 0;
+	Temperature temp { -2 };
+	printWeather(temp);
+	return 0;
 }
 ```
 Альтернативное объявление
@@ -414,11 +414,11 @@ int main() {
 ```
 #### Задания
 1. Спроектировать и реализовать дружественный к классу `Time` класс `SimpleWatch`, который:
-   + может показывать время, содержащееся в `private` переменных объекта класса `Time`.
-   + может устанавливать (менять) значение времени в переданном ему объекте класса `Time`,
-   также через прямой доступ к `private` членам класса `Time`.
++ может показывать время, содержащееся в `private` переменных объекта класса `Time`.
++ может устанавливать (менять) значение времени в переданном ему объекте класса `Time`,
+также через прямой доступ к `private` членам класса `Time`.
 2. Реализовать класс `Watch`, который содержит __функции__ члены класса
-  __дружественные к классу Time__, реализующие просмотр и установку времени
-  (см. предыдущий пункт) в объекте класса `Time`, который передается им как параметр.
+__дружественные к классу Time__, реализующие просмотр и установку времени
+(см. предыдущий пункт) в объекте класса `Time`, который передается им как параметр.
 3. Оба класса `Watch` должны реализовывать возможность изменять формат выводимого времени (12/24),
-  путем установления значения внутренней переменной класса `Watch`.
+путем установления значения внутренней переменной класса `Watch`.
