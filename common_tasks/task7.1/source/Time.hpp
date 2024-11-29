@@ -1,5 +1,12 @@
+#ifndef TIME_HPP
+#define TIME_HPP
+
 #include <iostream>
 #include <stdexcept>
+
+class SimpleWatch; // forward declaration
+#include "Watch.hpp"
+
 
 class Time {
 private:
@@ -78,5 +85,11 @@ public:
 			std::cerr << "Output error: " << e.what() << std::endl;
 		}
 	}
+	// Дружественные функции из класса Watch
+	friend void Watch::showTime(const Time& time);
+	friend void Watch::setTime(Time& time, int h, int m, int s);
+	
+	friend class SimpleWatch; // объявление дружественного класса
 };
 
+#endif // TIME_HPP

@@ -350,12 +350,75 @@ int main() {
 
 ### 7.1. Дружественные функции и класс
 #### Теория
+Ключевое слово `friend` открывает доступ к "приватным" полям класса.   
+Вводный пример 
+```
+#include <iostream>
+class Temperature {
+private:
+    int m_temp { 0 };
+public:
+    explicit Temperature(int temp) : m_temp { temp } { }
+    friend void printWeather(const Temperature& temperature); // объявление friend функции
+};
+
+void printWeather(const Temperature& temperature) {
+    std::cout << "The temperature is " << temperature.m_temp << std::endl; // использование приватного поля
+}
+int main() {
+    Temperature temp { -2 };
+    printWeather(temp);
+    return 0;
+}
+```
+Альтернативное объявление
+```
+class Temperature {
+	...
+	// friend функция, объясленная внутри класса, не является членом класса
+	friend void printWeather(const Temperature& temperature){
+		std::cout << "The temperature is " << temperature.m_temp << std::endl;
+	}
+	...
+};
+```
+Дружественный класс
+```
+#include <iostream>
+class Temperature{
+private:
+	int m_temp { 0 };
+public:
+	explicit Temperature(int temp) : m_temp { temp } { }
+	int getTemperature() const { return m_temp; }
+	friend class WeatherStation; // объявление дружественного класса
+};
+
+class WeatherStation{
+private:
+	int ws_temp {-273};
+public:
+	WeatherStation(int t): ws_temp(t){}
+	void ShowWeather(const Temperature& temp){
+		// Прямой доступ к приватному полю m_temp
+		std::cout << temp.m_temp << std::endl;
+	}
+};
+
+int main() {
+	Temperature temp {-2} ;
+	WeatherStation ws {20};
+	ws.ShowWeather(temp);  // Вывод: -2
+	return 0;
+}
+```
 #### Задания
 1. Спроектировать и реализовать дружественный к классу `Time` класс `SimpleWatch`, который:
-  + может показывать время, содержащееся в `private` переменных объекта класса `Time`.
-  + может устанавливать (менять) значение времени в переданном ему объекте класса `Time`, также через прямой доступ к `private` членам класса `Time`.
+   + может показывать время, содержащееся в `private` переменных объекта класса `Time`.
+   + может устанавливать (менять) значение времени в переданном ему объекте класса `Time`,
+   также через прямой доступ к `private` членам класса `Time`.
 2. Реализовать класс `Watch`, который содержит __функции__ члены класса
-__дружественные к классу Time__, реализующие просмотр и установку времени
-(см. предыдущий пункт) в объекте класса `Time`, который передается им как параметр.
+  __дружественные к классу Time__, реализующие просмотр и установку времени
+  (см. предыдущий пункт) в объекте класса `Time`, который передается им как параметр.
 3. Оба класса `Watch` должны реализовывать возможность изменять формат выводимого времени (12/24),
-путем установления значения внутренней переменной класса `Watch`.
+  путем установления значения внутренней переменной класса `Watch`.
