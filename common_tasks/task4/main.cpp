@@ -1,7 +1,6 @@
-#include "Time.h"
+#include "Time.hpp"
 
-int main()
-{
+int main() {
 	Time t;
 	t.SetHours(1);
 	Time t2 = t;

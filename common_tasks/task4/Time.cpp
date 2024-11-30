@@ -1,30 +1,30 @@
-#include "Time.h"
+#include "Time.hpp"
 
 int Time::object_count = 0;
 
 Time::Time() { // Default Constructor
+	++object_count;
 	std::cout << "Default Constructor called. Current object count: " << object_count << "\n";
 	hours = 0; minutes = 0; seconds = 0;
-	++object_count;
 }
 
 Time::Time(int h, int m, int s) : hours(h), minutes(m), seconds(s) {
+	++object_count;
 	std::cout << "Constructor called. Current object count: " << object_count << "\n";
 	Normalize();  // Нормализация времени после инициализации
-	++object_count;
 }
 
-Time(const Time& other) { // Copy Constructor
-	std::cout << "Copy Constructor called. Current object count: " << object_count << "\n";
-	this->seconds = other->seconds;
-	this->minutes = other->minutes;
-	this->hours = other->hours;
+Time::Time(const Time& other) { // Copy Constructor
 	++object_count;
+	std::cout << "Copy Constructor called. Current object count: " << object_count << "\n";
+	this->seconds = other.seconds;
+	this->minutes = other.minutes;
+	this->hours = other.hours;
 }
 
 Time::~Time() { // Destructor
-	std::cout << "Destructor called. Current object count: " << object_count << "\n";
 	--object_count;
+	std::cout << "Destructor called. Current object count: " << object_count << "\n";
 }
 
 void Time::Normalize() {
