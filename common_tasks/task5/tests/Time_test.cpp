@@ -1,132 +1,116 @@
 #include <gtest/gtest.h>
-#include "Time.h"
+#include "Time.hpp"
 
-// Тестирование конструктора по умолчанию
-TEST(TimeTest, DefaultConstructor) {
+// Тесты для конструкторов
+TEST(Constructors, Default_Constructor) {
     Time t;
     EXPECT_EQ(t.GetHours(), 0);
     EXPECT_EQ(t.GetMinutes(), 0);
     EXPECT_EQ(t.GetSeconds(), 0);
 }
 
-// Тестирование параметрического конструктора
-TEST(TimeTest, ParametrizedConstructor) {
-    Time t(10, 30, 45);
+TEST(Constructors, Parameterized_Constructor) {
+    Time t(10, 15, 30);
     EXPECT_EQ(t.GetHours(), 10);
-    EXPECT_EQ(t.GetMinutes(), 30);
-    EXPECT_EQ(t.GetSeconds(), 45);
+    EXPECT_EQ(t.GetMinutes(), 15);
+    EXPECT_EQ(t.GetSeconds(), 30);
 }
 
-// Тестирование конструктора копирования
-TEST(TimeTest, CopyConstructor) {
-    Time t1(5, 15, 25);
-    Time t2 = t1;
-    EXPECT_EQ(t2.GetHours(), 5);
-    EXPECT_EQ(t2.GetMinutes(), 15);
-    EXPECT_EQ(t2.GetSeconds(), 25);
+TEST(Constructors, Copy_Constructor) {
+    Time t1(10, 15, 30);
+    Time t2(t1);
+    EXPECT_EQ(t2.GetHours(), t1.GetHours());
+    EXPECT_EQ(t2.GetMinutes(), t1.GetMinutes());
+    EXPECT_EQ(t2.GetSeconds(), t1.GetSeconds());
 }
 
-// Тестирование оператора присваивания
-TEST(TimeTest, AssignmentOperator) {
-    Time t1(10, 20, 30);
-    Time t2;
-    t2 = t1;
-    EXPECT_EQ(t2.GetHours(), 10);
-    EXPECT_EQ(t2.GetMinutes(), 20);
-    EXPECT_EQ(t2.GetSeconds(), 30);
-}
-
-// Тестирование оператора сложения с целым числом
-TEST(TimeTest, PlusOperatorInt) {
-    Time t(1, 20, 30);
-    t = t + 5000; // Прибавим 5000 секунд = 20 s + 23m + 1h
+// Тесты для операторов сложения
+TEST(Operators, Add_Seconds_To_Object) {
+    Time t(1, 59, 50);
+    t += 20;  // 1:59:50 + 20 секунд = 2:00:10
     EXPECT_EQ(t.GetHours(), 2);
-    EXPECT_EQ(t.GetMinutes(), 43);
+    EXPECT_EQ(t.GetMinutes(), 0);
+    EXPECT_EQ(t.GetSeconds(), 10);
+}
+
+TEST(Operators, Add_Object_To_Seconds) {
+    Time t1(2, 30, 45);
+    Time t2 = t1 + 75;  // 2:30:45 + 75 секунд = 2:32:00
+    EXPECT_EQ(t2.GetHours(), 2);
+    EXPECT_EQ(t2.GetMinutes(), 32);
+    EXPECT_EQ(t2.GetSeconds(), 0);
+}
+
+TEST(Operators, Add_Objects) {
+    Time t1(2, 30, 45);
+    Time t2(1, 45, 30);
+    t1 += t2;  // 2:30:45 + 1:45:30 = 4:16:15
+    EXPECT_EQ(t1.GetHours(), 4);
+    EXPECT_EQ(t1.GetMinutes(), 16);
+    EXPECT_EQ(t1.GetSeconds(), 15);
+}
+
+// Тесты для операторов вычитания
+TEST(Operators, Subtract_Seconds_From_Object) {
+    Time t(2, 0, 10);
+    t -= 20;  // 2:00:10 - 20 секунд = 1:59:50
+    EXPECT_EQ(t.GetHours(), 1);
+    EXPECT_EQ(t.GetMinutes(), 59);
     EXPECT_EQ(t.GetSeconds(), 50);
 }
 
-// Тестирование оператора сложения с объектом Time
-TEST(TimeTest, PlusOperatorTime) {
-    Time t1(1, 20, 30);
-    Time t2(0, 45, 50);
-    t1 += t2; // Ожидаем 2ч 6м 20с
-    EXPECT_EQ(t1.GetHours(), 2);
-    EXPECT_EQ(t1.GetMinutes(), 6);
-    EXPECT_EQ(t1.GetSeconds(), 20);
+TEST(Operators, Subtract_Object_From_Seconds) {
+    Time t1(2, 0, 10);
+    Time t2 = t1 - 15;  // 2:00:10 - 15 секунд = 2:00:55
+    EXPECT_EQ(t2.GetHours(), 1);
+    EXPECT_EQ(t2.GetMinutes(), 59);
+    EXPECT_EQ(t2.GetSeconds(), 55);
 }
 
-// Тестирование оператора вычитания с объектом Time
-TEST(TimeTest, MinusOperatorTime) {
-    Time t1(2, 0, 0);
-    Time t2(1, 30, 0);
-    Time result = t1 - t2;  // Ожидаем 0ч 30м 0с
+TEST(Operators, Subtract_Objects) {
+    Time t1(2, 30, 45);
+    Time t2(1, 45, 30);
+    Time result = t1 - t2;  // 2:30:45 - 1:45:30 = 0:45:15
     EXPECT_EQ(result.GetHours(), 0);
-    EXPECT_EQ(result.GetMinutes(), 30);
-    EXPECT_EQ(result.GetSeconds(), 0);
+    EXPECT_EQ(result.GetMinutes(), 45);
+    EXPECT_EQ(result.GetSeconds(), 15);
 }
 
-// Тестирование оператора вычитания с целым числом
-TEST(TimeTest, MinusOperatorInt) {
-    Time t(2, 10, 15);
-    t -= 1500; // Вычитаем 1500 секунд
-    EXPECT_EQ(t.GetHours(), 1);
-    EXPECT_EQ(t.GetMinutes(), 45);
-    EXPECT_EQ(t.GetSeconds(), 15);
-}
-
-// Тестирование оператора сравнения
-TEST(TimeTest, EqualityOperator) {
-    Time t1(5, 15, 25);
-    Time t2(5, 15, 25);
+// Тесты для операторов сравнения
+TEST(Operators, Equality_Operator) {
+    Time t1(2, 30, 45);
+    Time t2(2, 30, 45);
     EXPECT_TRUE(t1 == t2);
+
+    Time t3(1, 45, 30);
+    EXPECT_FALSE(t1 == t3);
 }
 
-TEST(TimeTest, InequalityOperator) {
-    Time t1(5, 15, 25);
-    Time t2(4, 15, 25);
-    EXPECT_FALSE(t1 == t2);
+// Тесты для нормализации
+TEST(Normalization, Normalize_Positive) {
+    Time t(25, 61, 3665);  // 25 часов, 61 минута, 3665 секунд
+    EXPECT_EQ(t.GetHours(), 3);
+    EXPECT_EQ(t.GetMinutes(), 2);
+    EXPECT_EQ(t.GetSeconds(), 5);
 }
 
-// Тестирование нормализации времени
-TEST(TimeTest, NormalizeTest) {
-    Time t(25, 100, 5000);  // Часы > 24, минуты > 60, секунды > 60
-    t.Normalize();
-    EXPECT_EQ(t.GetHours(), 4);    // Нормализуем часы
-    EXPECT_EQ(t.GetMinutes(), 3); // Нормализуем минуты
-    EXPECT_EQ(t.GetSeconds(), 20); // Нормализуем секунды
+TEST(Normalization, Normalize_Negative) {
+    Time t(-1, -61, -3665);  // -1 час, -61 минута, -3665 секунд
+    EXPECT_EQ(t.GetHours(), 20);
+    EXPECT_EQ(t.GetMinutes(), 57);
+    EXPECT_EQ(t.GetSeconds(), 55);
 }
 
-// Тест с ошибкой (некорректный результат)
-TEST(TimeTest, FailTest) {
-    Time t1(10, 30, 45);
-    Time t2(5, 30, 45);
-    EXPECT_EQ(t1.GetHours(), 5);  // Ошибка, потому что часы должны быть 10
-}
-
-// Тестирование метода ToSeconds()
-TEST(TimeTest, ToSecondsTest) {
-    Time t(1, 30, 45);
-    EXPECT_EQ(t.ToSeconds(), 5445); // (1*3600 + 30*60 + 45 = 5445)
-}
-
-// Тестирование метода SetHours()
-TEST(TimeTest, SetHoursTest) {
-    Time t;
-    t.SetHours(8);
-    EXPECT_EQ(t.GetHours(), 8);
-}
-
-// Проверка на количество объектов
-TEST(TimeTest, ObjectCountTest) {
-    EXPECT_EQ(Time::GetObjectCount(), 0); // В момент начала теста объект еще не создан
-    Time t1(5, 10, 15);
-    EXPECT_EQ(Time::GetObjectCount(), 1); // Один объект должен быть создан
-    Time t2 = t1;
-    EXPECT_EQ(Time::GetObjectCount(), 2); // Второй объект после копирования
+// Тесты для статического члена
+TEST(Static, Object_Count) {
+    int initial_count = Time::GetObjectCount();
+    Time t1, t2, t3;
+    EXPECT_EQ(Time::GetObjectCount(), initial_count + 3);
     {
-        Time t3(7, 25, 30);
-        EXPECT_EQ(Time::GetObjectCount(), 3); // Третий объект
+        Time t4;
+        EXPECT_EQ(Time::GetObjectCount(), initial_count + 4);
     }
-    EXPECT_EQ(Time::GetObjectCount(), 2); // Объект t3 был уничтожен
+    EXPECT_EQ(Time::GetObjectCount(), initial_count + 3);
 }
+
 

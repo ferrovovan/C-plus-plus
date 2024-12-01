@@ -1,4 +1,4 @@
-#include "Time.h"
+#include "Time.hpp"
 
 void do_work() {
 	Time t;
