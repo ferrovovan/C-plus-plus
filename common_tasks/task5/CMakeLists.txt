@@ -21,7 +21,7 @@ target_link_libraries(main Time)
 option(BUILD_TESTS "Build tests" ON)
 
 if(BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests)
+	enable_testing()
+	add_subdirectory(tests)
 endif()
 

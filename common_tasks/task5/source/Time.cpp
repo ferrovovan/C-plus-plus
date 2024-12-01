@@ -61,9 +61,9 @@ Time Time::operator + (int s) const {
 	return Time(this->hours, this->minutes, this->seconds + s);
 }
 Time Time::operator + (const Time& other) const {
-    Time result(hours + other.hours, minutes + other.minutes, seconds + other.seconds);
-    result.Normalize(); // Нормализация результата
-    return result;
+	Time result(hours + other.hours, minutes + other.minutes, seconds + other.seconds);
+	result.Normalize(); // Нормализация результата
+	return result;
 }
 
 
@@ -80,9 +80,9 @@ Time Time::operator - (int s) const {
 	return Time(this->hours, this->minutes, this->seconds - s);
 }
 Time Time::operator - (const Time& other) const {
-    Time result(hours - other.hours, minutes - other.minutes, seconds - other.seconds);
-    result.Normalize(); // Нормализация результата
-    return result;
+	Time result(hours - other.hours, minutes - other.minutes, seconds - other.seconds);
+	result.Normalize(); // Нормализация результата
+	return result;
 }
 
 

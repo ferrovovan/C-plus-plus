@@ -70,7 +70,7 @@ public:
 
 	void Normalize();
 	int ToSeconds() const { return hours * 3600 + minutes * 60 + seconds; }
-	void SetHours(int hours) { this->hours = hours; }
+	void SetHours(int hours) { this->hours = hours; Normalize(); }
 	
 	void PrintTime(){
 		std::cout << "H:" << this->GetHours()

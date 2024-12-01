@@ -61,9 +61,9 @@ public:
 
 	void Normalize();
 	int ToSeconds() const { return hours * 3600 + minutes * 60 + seconds; }
-	void SetHours(int hours) { this->hours = hours; }
-	void SetMinutes(int minutes) { this->minutes = minutes; }
-	void SetSeconds(int seconds) { this->seconds = seconds; };
+	void SetHours(int hours) { this->hours = hours; Normalize(); }
+	void SetMinutes(int minutes) { this->minutes = minutes; Normalize(); }
+	void SetSeconds(int seconds) { this->seconds = seconds; Normalize(); }
 
 	void PrintTime(){
 		std::cout << "H:" << this->GetHours()
