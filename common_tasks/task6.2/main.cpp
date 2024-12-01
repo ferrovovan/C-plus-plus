@@ -1,6 +1,10 @@
 #include <iostream>
 #include <string>  // для print_green()
-#include "Time.h"
+#include "Time.hpp"
+
+void print_green(const std::string& message) {
+	std::cout << "\033[0;32m" << message << "\033[0m\n";
+}
 
 // Тест нормализации времени и вызова исключений при установке некорректных часов
 void TestNormalizationAndSetHours() {
@@ -53,10 +57,6 @@ void TestInvalidSecondsAddition() {
 	} catch (const std::invalid_argument& e) {
 		std::cerr << "Caught exception: " << e.what() << "\n";
 	}
-}
-
-void print_green(const std::string& message) {
-    std::cout << "\033[0;32m" << message << "\033[0m\n";
 }
 
 int main() {
