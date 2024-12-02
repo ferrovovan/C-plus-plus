@@ -2,7 +2,6 @@
 #include "Time.hpp"
 #include <iostream>
 
-bool Watch::is24HourFormat = true;
 
 void Watch::showTime(const Time& time) {
 	int hours = time.hours;
@@ -16,4 +15,5 @@ void Watch::setTime(Time& time, int h, int m, int s) {
 	time.minutes = m;
 	time.seconds = s;
 }
+
 

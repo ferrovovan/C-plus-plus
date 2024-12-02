@@ -1,10 +1,10 @@
-#include "SimpleWatch.hpp"
 #include "Time.hpp"
+#include "SimpleWatch.hpp"
 #include <iostream>
 
 void SimpleWatch::showTime(const Time& time) {
 	int hours = time.hours;
-	if ( not Watch::is24HourFormat and hours > 12)
+	if ( not is24HourFormat and hours > 12)
 		hours -= 12;
 	std::cout << "SimpleWatch: " << hours << ":" << time.minutes << ":" << time.seconds << std::endl;
 }
