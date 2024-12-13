@@ -12,7 +12,8 @@ public:
 	using Key = std::pair<char, int>; // 'C' или 'D' и количество амогусов
 	using MatrixMap = std::unordered_map<Key, int>;
 
-	// Конструктор
+	// Конструкторы
+	explicit MatrixReader();
 	explicit MatrixReader(const std::string& file_path);
 
 	// Получение результата для конкретного сочетания

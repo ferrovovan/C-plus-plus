@@ -11,7 +11,8 @@ private:
 	MatrixReader matrixReader; // Объект для чтения матрицы
 
 public:
-	// Конструктор с файлом матрицы
+	// Конструкторы с файлом матрицы
+	explicit GameMatrix();
 	explicit GameMatrix(const std::string &file_path);
 
 	// Получение очков за комбинацию решений

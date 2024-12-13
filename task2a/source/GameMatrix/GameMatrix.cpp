@@ -1,6 +1,9 @@
 #include "GameMatrix.hpp"
 #include <stdexcept>
 
+GameMatrix::GameMatrix()
+	: matrixReader() {} // Инициализация MatrixReader)
+
 GameMatrix::GameMatrix(const std::string &file_path)
 	: matrixReader(file_path) {} // Инициализация MatrixReader
 
@@ -23,4 +26,5 @@ std::vector<int> GameMatrix::calculate_scores(const Choices &choices) const {
 		getScore(choices[2], choices[0], choices[1])
 	};
 }
+
 

@@ -6,9 +6,20 @@ echo_green() {
 }
 
 echo_green "Работа"
+matrix_dir="./config/matrices/"
 
+echo_green "Balanced Trade-off"
+matrix="Balanced Trade-off.conf"
 # fast
-./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye --mode=fast --steps=10 --matrix=./config/default_matrix.conf
+./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye --mode=fast --steps=10 --matrix="$matrix_dir$matrix"
 
 # tournament
-./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye RandomChoice --mode=tournament --matrix=./config/default_matrix.conf
+./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye RandomChoice --mode=tournament --matrix="$matrix_dir$matrix"
+
+echo_green "Extreme Payoff for Solo Betrayal"
+matrix="Extreme Payoff for Solo Betrayal.conf"
+# fast
+./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye --mode=fast --steps=10 --matrix="$matrix_dir$matrix"
+
+# tournament
+./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye RandomChoice --mode=tournament --matrix="$matrix_dir$matrix"

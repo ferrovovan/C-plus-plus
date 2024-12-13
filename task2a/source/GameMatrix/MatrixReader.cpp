@@ -3,6 +3,16 @@
 #include <sstream>
 #include <iostream>
 
+MatrixReader::MatrixReader() {
+	// Заполнение матрицы вручную назначенными числами
+	matrix[{'C', 0}] = 7;
+	matrix[{'C', 1}] = 3;
+	matrix[{'C', 2}] = 0;
+	matrix[{'D', 0}] = 9;
+	matrix[{'D', 1}] = 5;
+	matrix[{'D', 2}] = 1;
+}
+
 MatrixReader::MatrixReader(const std::string& file_path) {
 	loadMatrix(file_path);
 }
