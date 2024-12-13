@@ -4,16 +4,7 @@ project(PrisonersDilemmaSim)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Источники проекта
-file(GLOB SOURCES
-	"source/*.cpp"
-	"source/GameMatrix/*.cpp"
-	"source/History/*.cpp"
-	"source/Simulation/*.cpp"
-	"source/strategies/concrete/*.cpp"
-	"source/strategies/*.cpp"
-	"source/utils/*.cpp"
-)
+file(GLOB_RECURSE SOURCES "source/*.cpp")
 
 # Добавляем исполнимый файл
 add_executable(PrisonersDilemmaSim ${SOURCES})

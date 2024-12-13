@@ -36,9 +36,13 @@ int main(int argc, char* argv[]) {
 		std::vector<std::unique_ptr<Strategy>> strategies;
 		for (const auto& strategy_name : params.strategies) {
 			std::string config_path = params.configDir + "/" + strategy_name + ".conf";
-			if (!std::filesystem::exists(config_path)) {} // заглушка
-			strategies.push_back(StrategyFactory::create(strategy_name));
+			if (!std::filesystem::exists(config_path)) { // обработка отсутствия конфигурационного файла
+				strategies.push_back(StrategyFactory::create(strategy_name, ""));
+			} else {
+				strategies.push_back(StrategyFactory::create(strategy_name, config_path));
+			}
 		}
+
 
 		// Создаём объект симуляции
 		Simulation simulation(std::move(strategies), params.matrixFile, params.steps);
