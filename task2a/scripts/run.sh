@@ -23,3 +23,10 @@ matrix="Extreme Payoff for Solo Betrayal.conf"
 
 # tournament
 ./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye RandomChoice --mode=tournament --matrix="$matrix_dir$matrix"
+
+echo_green "Default matrix"
+# fast
+./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye --mode=fast --steps=10
+
+# tournament
+./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye RandomChoice --mode=tournament

@@ -1,8 +1,7 @@
 #include "GameMatrix.hpp"
 #include <stdexcept>
 
-GameMatrix::GameMatrix()
-	: matrixReader() {} // Инициализация MatrixReader)
+GameMatrix::GameMatrix(): matrixReader() {}
 
 GameMatrix::GameMatrix(const std::string &file_path)
 	: matrixReader(file_path) {} // Инициализация MatrixReader

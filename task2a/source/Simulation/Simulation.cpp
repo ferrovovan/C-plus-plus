@@ -2,14 +2,12 @@
 #include <iostream>
 #include <stdexcept>
 
-Simulation::Simulation(std::vector<std::unique_ptr<Strategy>> strategies, 
+Simulation::Simulation(std::vector<std::unique_ptr<Strategy>> strategies,
 					const std::string &file_path,
 					int simulation_steps) :
 			strategies(std::move(strategies)), 
-			game_matrix(GameMatrix(file_path)), 
-			steps(simulation_steps)
-	{
-}
+			game_matrix(file_path.empty() ? GameMatrix() : GameMatrix(file_path)),
+			steps(simulation_steps) {}
 
 // Проведение одного раунда
 Choices Simulation::play_round() {
