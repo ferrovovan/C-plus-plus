@@ -17,23 +17,29 @@ SimulationParams CommandLineParser::parse(int argc, char* argv[]) {
 	}
 	validateStrategies(params);
 
-	if (args.count("--mode")) {
+	if (args.count("--mode"))
 		parse_Mode(args, params);
-	} else if (params.strategies.size() > 3) {
-		params.mode = "tournament"; // Умолчание для большого количества стратегий
+	else {
+		if (params.strategies.size() > 3) {  // Умолчание для большого количества стратегий
+			params.mode = "tournament";
+		}
+		else params.mode = "detailed";
 	}
 
-	if (args.count("--steps")) {
+	if (args.count("--steps"))
 		parse_Steps(args, params);
-	}
+	else
+		params.steps = 20;
 
-	if (args.count("--configs")) {
+	if (args.count("--configs"))
 		parse_ConfigDir(args, params);
-	}
+	else
+		params.configDir = "";
 
-	if (args.count("--matrix")) {
+	if (args.count("--matrix"))
 		parse_MatrixFile(args, params);
-	}
+	else
+		params.matrixFile = "";
 
 	return params;
 }
@@ -78,7 +84,15 @@ void CommandLineParser::parse_Mode(const std::map<std::string, std::string>& arg
 	params.mode = args.at("--mode");
 	if (params.mode != "detailed" && params.mode != "fast" && params.mode != "tournament") {
 		std::cerr << "Ошибка: режим симуляции должен быть одним из [detailed|fast|tournament]." << std::endl;
-		exit(1);
+		throw "mode choice error";
+	}
+	if (params.mode == "tournament" and params.strategies.size() < 4) {
+		std::cerr << "Ошибка: при выборе \"tournament\". Должно быть больше 3 стратегий." << std::endl;
+		throw "mode choice error";
+	}
+	if (params.mode != "tournament" and params.strategies.size() != 3) {
+		std::cerr << "Ошибка: при выборе \"" << params.mode << "\". Должно быть ровно 3 стратегий." << std::endl;
+		throw "mode choice error";
 	}
 }
 

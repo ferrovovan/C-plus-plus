@@ -6,4 +6,9 @@ echo_green() {
 }
 
 echo_green "Работа"
+
+# fast
 ./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye --mode=fast --steps=10 --matrix=./config/default_matrix.conf
+
+# tournament
+./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye RandomChoice --mode=tournament --matrix=./config/default_matrix.conf

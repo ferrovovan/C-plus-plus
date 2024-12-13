@@ -7,8 +7,8 @@
 
 struct SimulationParams {
 	std::vector<std::string> strategies; // Список стратегий
-	std::string mode = "detailed";       // Режим симуляции (по умолчанию — detailed)
-	int steps = 100;                     // Количество шагов (по умолчанию — 100)
+	std::string mode;       // Режим симуляции (по умолчанию — detailed)
+	int steps;                     // Количество шагов (по умолчанию — 100)
 	std::string configDir;               // Директория с конфигурационными файлами стратегий
 	std::string matrixFile;             // Файл с матрицей игры
 };

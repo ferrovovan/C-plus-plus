@@ -6,13 +6,13 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Источники проекта
 file(GLOB SOURCES
-    "source/*.cpp"
-    "source/GameMatrix/*.cpp"
-    "source/History/*.cpp"
-    "source/Simulation/*.cpp"
-    "source/strategies/concrete/*.cpp"
-    "source/strategies/*.cpp"
-    "source/utils/*.cpp"
+	"source/*.cpp"
+	"source/GameMatrix/*.cpp"
+	"source/History/*.cpp"
+	"source/Simulation/*.cpp"
+	"source/strategies/concrete/*.cpp"
+	"source/strategies/*.cpp"
+	"source/utils/*.cpp"
 )
 
 # Добавляем исполнимый файл

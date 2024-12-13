@@ -3,16 +3,12 @@
 #include <stdexcept>
 
 Simulation::Simulation(std::vector<std::unique_ptr<Strategy>> strategies, 
-                       const std::string &file_path,
-                       int simulation_steps) :
-            strategies(std::move(strategies)), 
-            game_matrix(GameMatrix(file_path)), 
-            steps(simulation_steps)
+					const std::string &file_path,
+					int simulation_steps) :
+			strategies(std::move(strategies)), 
+			game_matrix(GameMatrix(file_path)), 
+			steps(simulation_steps)
 	{
-	
-	if (this->strategies.size() != 3) {
-		throw std::invalid_argument("Симуляция должна иметь ровно 3 стратегии.");
-	}
 }
 
 // Проведение одного раунда
@@ -62,36 +58,63 @@ void Simulation::run_fast_mode() {
 
 // Режим турнира
 void Simulation::run_tournament() {
-	std::cout << "Запуск турнира...\n";
-	auto scores = calculate_tournament_scores();
-
-	for (size_t i = 0; i < scores.size(); ++i) {
-		std::cout << "Игрок " << i + 1 << ": общий счёт = " << scores[i] << std::endl;
+	if (strategies.size() < 4) {
+		std::cerr << "Для проведения турнира требуется минимум 4 стратегии.\n";
+		return;
 	}
-}
+	std::cout << "Запуск турнира...\n";
 
-// Помощник для вычисления очков в турнире
-std::vector<int> Simulation::calculate_tournament_scores() const {
-	std::vector<int> total_scores(strategies.size(), 0);
+	size_t n = strategies.size(); // Количество стратегий
+	std::vector<int> total_scores(n, 0); // Результирующий массив очков каждой стратегии
 
-	for (size_t i = 0; i < strategies.size(); ++i) {
-		for (size_t j = 0; j < strategies.size(); ++j) {
-			if (i == j) continue;
+	// Генерация всех возможных троек стратегий с повторением
+	for (size_t i = 0; i < n; ++i) {
+		for (size_t j = i; j < n; ++j) {
+			for (size_t k = j; k < n; ++k) {
+				// Текущие участники турнира
+				Strategy* player1 = strategies[i].get();
+				Strategy* player2 = strategies[j].get();
+				Strategy* player3 = strategies[k].get();
 
-			// Симулируем игру между стратегиями i и j
-			for (int round = 0; round < steps; ++round) {
-				Choices round_choices = {
-					strategies[i]->decide(history.get_history()),
-					strategies[j]->decide(history.get_history()),
-					'-' // Третий игрок отсутствует в дуэльных раундах
-				};
+				// Временная история для этих трёх участников
+				History round_history;
 
-				auto scores = game_matrix.calculate_scores(round_choices);
-				total_scores[i] += scores[0];
-				total_scores[j] += scores[1];
+				// Очки за текущую тройку
+				std::vector<int> scores_for_match(3, 0);
+
+				// Симулируем раунды для трёх участников
+				for (int step = 0; step < steps; ++step) {
+					Choices choices = {
+						player1->decide(round_history.get_history()),
+						player2->decide(round_history.get_history()),
+						player3->decide(round_history.get_history())
+					};
+
+					// Добавляем раунд в историю
+					round_history.add_round(choices);
+
+					// Рассчитываем очки за текущий раунд
+					std::vector<int> round_scores = game_matrix.calculate_scores(choices);
+
+					// Суммируем очки
+					for (size_t idx = 0; idx < 3; ++idx) {
+						scores_for_match[idx] += round_scores[idx];
+					}
+				}
+
+				// Учитываем результаты матча для глобальных счётчиков
+				total_scores[i] += scores_for_match[0];
+				total_scores[j] += scores_for_match[1];
+				total_scores[k] += scores_for_match[2];
 			}
 		}
 	}
-	return total_scores;
+
+	// Вывод итогов турнира
+	std::cout << "Результаты турнира:\n";
+	for (size_t i = 0; i < n; ++i) {
+		std::cout << "Стратегия " << i + 1 << ": " << total_scores[i] << " очков\n";
+	}
 }
+
 
