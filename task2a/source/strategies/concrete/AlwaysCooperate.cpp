@@ -5,10 +5,11 @@
 
 class AlwaysCooperate : public Strategy {
 public:
-	Decision decide(const ChoiceHistory &history) override {
-		(void)history;  // Оповещаем компилятор, что параметр явно не используется
-		return 'C';
-	}
+    AlwaysCooperate() : Strategy("AlwaysCooperate") {} // Передаём имя через конструктор базового класса
+    Decision decide(const ChoiceHistory& history) override {
+        (void)history;  // Параметр не используется
+        return 'C';
+    }
 };
 
 #endif

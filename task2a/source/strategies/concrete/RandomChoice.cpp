@@ -7,7 +7,7 @@
 
 class RandomChoice : public Strategy {
 public:
-	RandomChoice() {  // Конструктор
+	RandomChoice() : Strategy("RandomChoice") {  // Конструктор
 		std::srand(std::time(nullptr));  // Инициализация генератора случайных чисел
 	}
 

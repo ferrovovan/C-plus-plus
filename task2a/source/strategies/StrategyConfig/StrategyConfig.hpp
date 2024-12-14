@@ -6,11 +6,11 @@
 
 class StrategyConfig {
 private:
-    std::unordered_map<std::string, double> config; // Хранение параметров
+	std::unordered_map<std::string, double> config; // Хранение параметров
 
 public:
-    explicit StrategyConfig(const std::string& config_path);
-    double get(const std::string& key, double default_value = 0.0) const; // Получить параметр
+	explicit StrategyConfig(const std::string& config_path);
+	double get(const std::string& key, double default_value = 0.0) const; // Получить параметр
 };
 
 #endif // STRATEGYCONFIG_HPP

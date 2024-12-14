@@ -1,118 +1,154 @@
 #include "Simulation.hpp"
 #include <iostream>
 #include <stdexcept>
+#include <thread>
+#include <chrono>
 
-Simulation::Simulation(std::vector<std::unique_ptr<Strategy>> strategies,
-					const std::string &file_path,
-					int simulation_steps) :
-			strategies(std::move(strategies)), 
-			game_matrix(file_path.empty() ? GameMatrix() : GameMatrix(file_path)),
-			steps(simulation_steps) {}
+Simulation::Simulation(
+    std::vector<std::unique_ptr<Strategy>> strategies,
+    const std::string& file_path,
+    int simulation_steps)
+    : strategies(std::move(strategies)),
+      game_matrix(file_path.empty() ? GameMatrix() : GameMatrix(file_path)),
+      steps(simulation_steps),
+      renderer() {}
 
 // Проведение одного раунда
 Choices Simulation::play_round() {
-	Choices current_choices;
-	for (auto& strategy : strategies) {
-		current_choices.push_back(strategy->decide(history.get_history()));
-	}
-	history.add_round(current_choices);
-	return current_choices;
+    Choices current_choices;
+    for (auto& strategy : strategies) {
+        current_choices.push_back(strategy->decide(history.get_history()));
+    }
+    history.add_round(current_choices);
+    return current_choices;
 }
 
-// Режим подробной симуляции
-void Simulation::run_detailed_mode() {
-	std::cout << "Запуск подробной симуляции...\n";
-	for (int i = 0; i < steps; ++i) {
-		Choices round_choices = play_round();
-		auto scores = game_matrix.calculate_scores(round_choices);
+void Simulation::simulate_round(ChoiceHistory& choices_history, ScoreList& total_scores) {
+	Choices round_choices = play_round();
+	auto round_scores = game_matrix.calculate_scores(round_choices);
 
-		std::cout << "Раунд " << i + 1 << ": ";
-		for (size_t j = 0; j < round_choices.size(); ++j) {
-			std::cout << "Игрок " << j + 1 << " выбрал " << round_choices[j]
-					<< ", очки: " << scores[j] << " ";
-		}
-		std::cout << std::endl;
-	}
-}
-
-// Режим быстрой симуляции
-void Simulation::run_fast_mode() {
-	std::cout << "Запуск быстрой симуляции...\n";
-	std::vector<int> total_scores(3, 0);
-
-	for (int i = 0; i < steps; ++i) {
-		Choices round_choices = play_round();
-		auto scores = game_matrix.calculate_scores(round_choices);
-
-		for (size_t j = 0; j < total_scores.size(); ++j) {
-			total_scores[j] += scores[j];
-		}
-	}
-
+	// Обновление исторических данных
+	choices_history.push_back(round_choices);
 	for (size_t i = 0; i < total_scores.size(); ++i) {
-		std::cout << "Игрок " << i + 1 << ": общий счёт = " << total_scores[i] << std::endl;
+		total_scores[i] += round_scores[i];
 	}
+}
+
+// Подробный режим
+void Simulation::run_detailed_mode() {
+    std::cout << "\nЗапуск подробной симуляции...\n";
+    std::cout << "Стратегии:\n";
+
+    StrategyNames strategy_names;
+    for (const auto& strategy : strategies) {
+        strategy_names.push_back(strategy->get_name());
+    }
+
+    renderer.render_detailed_table_header(strategy_names);
+
+    // Инициализация истории и счёта
+    ChoiceHistory choices_history;
+    ScoreList total_scores(strategies.size(), 0);
+
+    // Симуляция раундов
+    size_t num_strategies = strategy_names.size(); // Количество стратегий
+    for (int step = 0; step < steps; ++step) {
+        simulate_round(choices_history, total_scores);
+		renderer.clear_strings(num_strategies + 2);
+		renderer.render_detailed_output(
+			step + 1, choices_history.back(), total_scores, strategy_names);
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+	}
+
+    // Итоговый счёт
+    renderer.render_fast_output(strategy_names, total_scores);
+}
+
+
+// Симуляция нескольких раундов
+RoundScores Simulation::simulate_rounds(int steps, ScoreList& total_scores) {
+    RoundScores detailed_results;
+
+    for (int i = 0; i < steps; ++i) {
+        Choices round_choices = play_round();
+        auto scores = game_matrix.calculate_scores(round_choices);
+
+        // Обновление общего счёта
+        for (size_t j = 0; j < total_scores.size(); ++j) {
+            total_scores[j] += scores[j];
+        }
+
+        // Сохранение подробностей для истории
+        detailed_results.push_back(scores);
+    }
+    return detailed_results;
+}
+
+// Быстрый режим
+void Simulation::run_fast_mode() {
+    std::cout << "Запуск быстрой симуляции...\n";
+
+    ScoreList total_scores(strategies.size(), 0);
+    simulate_rounds(steps, total_scores);
+    StrategyNames strategy_names;
+    for (const auto& strategy : strategies) {
+        strategy_names.push_back(strategy->get_name());
+    }
+    renderer.render_fast_output(strategy_names, total_scores);
+}
+
+// Проведение матча с тремя стратегиями
+void Simulation::play_custom_round(Strategy* player1, Strategy* player2, Strategy* player3,
+                                   size_t i, size_t j, size_t k, ScoreList& total_scores) {
+    History round_history;
+    ScoreList scores_for_match(3, 0);
+
+    for (int step = 0; step < steps; ++step) {
+        Choices choices = {
+            player1->decide(round_history.get_history()),
+            player2->decide(round_history.get_history()),
+            player3->decide(round_history.get_history())
+        };
+
+        round_history.add_round(choices);
+        ScoreList round_scores = game_matrix.calculate_scores(choices);
+
+        for (size_t idx = 0; idx < 3; ++idx) {
+            scores_for_match[idx] += round_scores[idx];
+        }
+    }
+
+    // Обновление общего счёта
+    total_scores[i] += scores_for_match[0];
+    total_scores[j] += scores_for_match[1];
+    total_scores[k] += scores_for_match[2];
+
+    renderer.render_tournament_round(total_scores,
+    	{strategies[i]->get_name(), strategies[j]->get_name(), strategies[k]->get_name()}
+    );
 }
 
 // Режим турнира
 void Simulation::run_tournament() {
-	if (strategies.size() < 4) {
-		std::cerr << "Для проведения турнира требуется минимум 4 стратегии.\n";
-		return;
+    std::cout << "Запуск турнира...\n";
+
+    size_t n = strategies.size();
+    ScoreList total_scores(n, 0);
+
+    // Перебор всех возможных троек стратегий
+    for (size_t i = 0; i < n; ++i) {
+        for (size_t j = i; j < n; ++j) {
+            for (size_t k = j; k < n; ++k) {
+                play_custom_round(strategies[i].get(), strategies[j].get(), strategies[k].get(),
+                                  i, j, k, total_scores);
+            }
+        }
+    }
+
+	StrategyNames strategy_names;
+	for (const auto& strategy : strategies) {
+		strategy_names.push_back(strategy->get_name());
 	}
-	std::cout << "Запуск турнира...\n";
-
-	size_t n = strategies.size(); // Количество стратегий
-	std::vector<int> total_scores(n, 0); // Результирующий массив очков каждой стратегии
-
-	// Генерация всех возможных троек стратегий с повторением
-	for (size_t i = 0; i < n; ++i) {
-		for (size_t j = i; j < n; ++j) {
-			for (size_t k = j; k < n; ++k) {
-				// Текущие участники турнира
-				Strategy* player1 = strategies[i].get();
-				Strategy* player2 = strategies[j].get();
-				Strategy* player3 = strategies[k].get();
-
-				// Временная история для этих трёх участников
-				History round_history;
-
-				// Очки за текущую тройку
-				std::vector<int> scores_for_match(3, 0);
-
-				// Симулируем раунды для трёх участников
-				for (int step = 0; step < steps; ++step) {
-					Choices choices = {
-						player1->decide(round_history.get_history()),
-						player2->decide(round_history.get_history()),
-						player3->decide(round_history.get_history())
-					};
-
-					// Добавляем раунд в историю
-					round_history.add_round(choices);
-
-					// Рассчитываем очки за текущий раунд
-					std::vector<int> round_scores = game_matrix.calculate_scores(choices);
-
-					// Суммируем очки
-					for (size_t idx = 0; idx < 3; ++idx) {
-						scores_for_match[idx] += round_scores[idx];
-					}
-				}
-
-				// Учитываем результаты матча для глобальных счётчиков
-				total_scores[i] += scores_for_match[0];
-				total_scores[j] += scores_for_match[1];
-				total_scores[k] += scores_for_match[2];
-			}
-		}
-	}
-
-	// Вывод итогов турнира
-	std::cout << "Результаты турнира:\n";
-	for (size_t i = 0; i < n; ++i) {
-		std::cout << "Стратегия " << i + 1 << ": " << total_scores[i] << " очков\n";
-	}
+	renderer.render_tournament_results(total_scores, strategy_names);
 }
-
 
