@@ -444,7 +444,8 @@ __дружественные к классу Time__, реализующие пр
 3. Оба класса `Watch` должны реализовывать возможность изменять формат выводимого времени (12/24),
 путем установления значения внутренней переменной класса `Watch`.
 
-### 7.2. "Агрегирование и композиция" и "Наследование"
+
+### 7.2. "Агрегирование и композиция" и "Введение в Наследование"
 #### Теория
 * Композиция: “Часть” является частью объекта, причем только одного. Объект управляет созданием и разрушением “части”.
 * Агрегация: “Часть” является частью объекта, причем не обязательно одного. Объект НЕ управляет созданием и разрушением “части”.  
@@ -485,3 +486,231 @@ public:
 Все элементы классов, где это необходимо для простоты, могут быть `public`.
 ##### Цель задания
 Демонстрация жизненного цикла объектов, при использовании цепочки наследования.
+
+
+### 8. Наследование: основы
+#### Теория
+Конструктор копирования и Деструкторы
+```
+class Person{
+public:
+	Person(const Person& person){  // Конструктор копирования
+		name = person.name;
+		age = person.age;
+	}
+	Person(std::string name, unsigned age) : name(name), age(age){
+		std::cout << "Init contruct Person" << std::endl;
+	}
+	~Person(){ std::cout << "Destructor Person" << std::endl; }
+
+	void print() const{
+		std::cout << "Name: " << name << "\tAge: " << age << std::endl;
+	}
+private:
+	std::string name; // имя
+	unsigned age;     // возраст
+};
+
+class Student: public Person{
+public:
+	Student(std::string name, unsigned age, std::string uni):
+		Person(name, age), uni(uni) { }
+
+	Student(const Student& student): Person(student){
+		uni=student.uni;
+	}
+	~Student(){ std::cout << "Destructor Student" << std::endl; }
+
+private:
+	std::string uni; // университет 
+};
+
+int main() {
+	Student stud1 {"Mik", 20, "MIT"};
+	Student stud2 {stud1};
+	stud2.print();
+}
+// Init contruct Person
+// Init constructor Student
+// Name: Mik	Age: 20
+// Destructor Student
+// Destructor Person
+```
+`final` - запрет наследования.
+```
+class Retiree final: public Person { ... };
+// class Cadaver: public Retiree{};
+// Ошибка!
+```
+Доступ до членов класса:  
+* `public` - есть доступ у всех.  
+* `private` - нет доступа ни у кого, кроме членов класса.  
+* `protected` - есть доступ только у наследников (не доступен не членам класса)
+
+#### Задание
+##### 8.1. Эволюция (первый вариант)
+Создать последовательную иерархию наследования существ:
+1. generic creature - общий родитель
+2. ocean creature - наследник умеющий плавать
+3. amphibious - наследник умеющий плавать и ходить
+4. terrestrial creature - не умеет плавать, но умеет ходить
+5. bird - умеет ходить и летать
+6. waterfowl - водоплавающая птица. Умеет ходить, летать и плавать.
+
+Используя только модификаторы доступа (без виртуальных функций).
+
+
+### 9. Наследование: продолжение
+#### Теория: "Добавление и сокрытие функционала"
+Использование функционала
+Из производного класса
+```
+class Person{
+public:
+	Person(std::string name, unsigned age): name(name), age(age){}
+	void print() const{
+		std::cout << "Person Name: " << name << "\tAge: " << age << "\n";
+	}
+private:
+	unsigned age;
+	std::string name;
+};
+class Student: public Person{
+public:
+	Student(std::string name, unsigned age, std::string uni): Person(name, age), uni(uni){}
+	void print() const{
+		std::cout << "Student attends " << uni << std::endl;
+	}
+private:
+	std::string uni;
+};
+
+
+int main() {
+Person pers {"Tom", 30};
+	pers.print();
+	// Person Name: Tom Age: 30
+	Student student {"Mik", 20, "MIT"};
+	student.print();
+	// Student attends MIT
+}
+```
+
+Добавление функционала
+```
+class Student: public Person{
+public:
+	void print() const{
+		Person::print(); // print(); // Нельзя просто print()!!!
+		std::cout << "Student attends " << uni << std::endl;
+	}
+};
+```
+
+#### Теория: "Множественное наследование"
+##### Пример 1
+Определяем основу примера
+```
+#include <iostream>
+class Person{
+public:
+	Person(std::string name, unsigned age): name(name), age(age){
+		std::cout << "Init contruct Person" << std::endl;
+	}
+	~Person(){ std::cout << "Destructor Person" << std::endl;}
+	void print() const{
+		std::cout << "Person Name: " << name << " Age: " << age << "\n";
+	}
+private:
+	unsigned age;
+	std::string name;
+};
+class Student: public Person{
+public:
+	Student(std::string name, unsigned age, std::string uni): Person(name, age), uni(uni){
+		std::cout << "Init constructor Student" << std::endl;
+	}
+	~Student(){ std::cout << "Destructor Student" << std::endl; }
+	void print() const{
+		std::cout << "Student attends " << uni << std::endl;
+	}
+private:
+	std::string uni;
+};
+
+class Worker {
+public:
+	Worker(std::string company): company(company){
+		std::cout << "Init constructor Worker" << std::endl;
+	}
+	~Worker(){ std::cout << "Destructor Worker" << std::endl; }
+	void print() const{
+		std::cout << "Works in " << company << std::endl;
+	}
+private:
+	std::string company;
+};
+```
+Производный класс
+```
+class StudentWorker: public Student, public Worker{
+public:
+	StudentWorker(std::string name, unsigned age, std::string uni, std::string company) : Student(name, age, uni), Worker(company) {
+		std::cout << "Init constructor StudentWorker" << std::endl;
+	}
+	~StudentWorker(){ std::cout << "Destructor StudentWorker" << std::endl; }
+	void print() const{
+		std::cout << "StudentWorker: " << std::endl;
+		Person::print();
+		Student::print();
+		Worker::print();
+	}
+};
+```
+Точка входа
+```
+int main() {
+	Person pers {"Tom", 30};
+	pers.print(); // (1)
+	Student student {"Mik", 20, "MIT"};
+	student.print(); // (2)
+	Worker worker {"Company"};
+	worker.print(); // (3)
+	StudentWorker student_worker {"Vasya", 23, "NSU", "The galley"};
+	student_worker.print(); // (4)
+}
+/*
+(1) Person Name: Tom Age: 30
+(2) Student attends MIT
+(3) Works in Company
+(4) StudentWorker:
+   Person Name: Vasya Age: 23
+   Student attends NSU
+   Works in The galley
+*/
+```
+
+#### Задания
+##### 9.1. Эволюция (второй вариант)
+1. Создать <ins>последовательную</ins> иерархию наследования существ:
+   1. generic creature - общий родитель
+   2. ocean creature - наследник умеющий плавать
+   3. amphibious - наследник умеющий плавать и ходить
+   4. terrestrial creature - не умеет плавать, но умеет ходить
+   5. bird - умеет ходить и летать
+   6. waterfowl - водоплавающая птица. Умеет ходить, летать и плавать.
+2. Использовать только добавление и сокрытие функционала (без изменения модификаторов доступа наследования).
+3. Не использовать множественное наследование.
+4. Не переопределять функции.
+
+##### 9.2. Эволюция (третий вариант)
+1. Создать иерархию наследования существ:
+   1. generic creature - общий родитель
+   2. ocean creature - наследник умеющий плавать
+   3. amphibious - наследник умеющий плавать и ходить
+   4. terrestrial creature - не умеет плавать, но умеет ходить
+   5. bird - умеет ходить и летать
+   6. waterfowl - водоплавающая птица. Умеет ходить, летать и плавать.
+2. <ins>Обязательно использовать множественное наследование.</ins>
+3. Не переопределять функции.
+
