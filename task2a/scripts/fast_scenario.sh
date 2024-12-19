@@ -12,7 +12,7 @@ matrix_dir="./config/matrices/"
 Default_matrix=1
 if [ $Default_matrix -eq 1 ]; then
 	echo_green "Default matrix"
-	./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye --mode=fast --steps=10
+	./build/PrisonersDilemmaSim AlwaysCooperate AdaptiveCooperator Eye4Eye --mode=fast --steps=10 --configs=./config/strategies
 fi
 
 Balanced_Trade_off=0
