@@ -5,11 +5,11 @@
 
 class AlwaysDefect : public Strategy {
 public:
-    AlwaysDefect() : Strategy("AlwaysDefect") {}
-    Decision decide(const ChoiceHistory& history) override {
-        (void)history;  // Параметр не используется
-        return 'D';
-    }
+	AlwaysDefect() : Strategy("AlwaysDefect") {}
+	Decision decide(const ChoiceHistory& history) override {
+		(void)history;  // Параметр не используется
+		return 'D';
+	}
 };
 
 #endif

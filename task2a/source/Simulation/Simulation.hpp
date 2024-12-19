@@ -25,10 +25,13 @@ private:
 	// Проведение одного раунда
 	Choices play_round();
 	void simulate_round(ChoiceHistory& choices_history, ScoreList& total_scores);
-	void play_custom_round(
-		Strategy* player1, Strategy* player2, Strategy* player3,
-		size_t i, size_t j, size_t k,
-		ScoreList& total_scores);
+	ScoreList play_custom_round(
+		Strategy* player1, Strategy* player2, Strategy* player3
+	);
+	// Обновление общего счёта
+	void add_total_score(ScoreList& scores_for_match,
+		size_t i, size_t j, size_t k, ScoreList& total_scores
+	) const;
 
 	// Подсчёт результатов для раундов
 	RoundScores simulate_rounds(int steps, ScoreList& total_scores);

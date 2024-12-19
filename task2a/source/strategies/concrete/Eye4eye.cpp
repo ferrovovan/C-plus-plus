@@ -6,7 +6,7 @@
 
 class Eye4Eye : public Strategy {
 public:
-    Eye4Eye() : Strategy("Eye4Eye") {}
+	Eye4Eye() : Strategy("Eye4Eye") {}
 	Decision decide(const ChoiceHistory &history) override {
 		(void)history;  // Оповещаем компилятор, что параметр явно не используется)
 		if (history.empty()) {
