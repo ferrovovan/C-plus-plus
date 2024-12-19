@@ -12,12 +12,12 @@ matrix_dir="./config/matrices/"
 Default_matrix=1
 if [ $Default_matrix -eq 1 ]; then
 	echo_green "Default matrix"
-	./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye --mode=detailed --steps=10
+	./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect RandomChoice --mode=detailed --steps=10
 fi
 
 Balanced_Trade_off=0
 if [ $Balanced_Trade_off -eq 1 ]; then
 	echo_green "Balanced Trade-off"
 	matrix="Balanced Trade-off.conf"
-	./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye --mode=detailed --steps=10 --matrix="$matrix_dir$matrix"
+	./build/PrisonersDilemmaSim AlwaysCooperate AdaptiveCooperator Eye4Eye --mode=detailed --steps=10 --matrix="$matrix_dir$matrix"
 fi

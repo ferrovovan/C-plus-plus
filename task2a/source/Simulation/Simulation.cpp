@@ -1,8 +1,6 @@
 #include "Simulation.hpp"
 #include <iostream>
 #include <stdexcept>
-#include <thread>
-#include <chrono>
 
 Simulation::Simulation(
 	std::vector<std::unique_ptr<Strategy>> strategies,
@@ -54,11 +52,13 @@ void Simulation::run_detailed_mode() {
 	size_t num_strategies = strategy_names.size(); // Количество стратегий
 	for (int step = 0; step < steps; ++step) {
 		simulate_round(choices_history, total_scores);
-		renderer.clear_strings(num_strategies + 2);
+		renderer.clear_strings(num_strategies + 4);
 		renderer.render_detailed_output(
 			step + 1, choices_history.back(), total_scores, strategy_names);
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::cout << "Нажмите \"Enter\" клавишу, чтобы продолжить..." << std::endl;
+		std::cin.get();
 	}
+	renderer.clear_strings(4);
 
 	// Итоговый счёт
 	renderer.render_fast_output(strategy_names, total_scores);
@@ -98,7 +98,7 @@ void Simulation::run_fast_mode() {
 }
 
 // Проведение матча с тремя стратегиями
-ScoreList Simulation::play_custom_round(Strategy* player1, Strategy* player2, Strategy* player3) {
+ScoreList Simulation::play_custom_match(Strategy* player1, Strategy* player2, Strategy* player3) {
 	History round_history;
 	ScoreList scores_for_match(3, 0);
 
@@ -138,7 +138,7 @@ void Simulation::run_tournament() {
 	for (size_t i = 0; i < n; ++i) {
 		for (size_t j = i + 1; j < n; ++j) {
 			for (size_t k = j + 1; k < n; ++k) {
-				scores_for_match = play_custom_round(
+				scores_for_match = play_custom_match(
 					strategies[i].get(),
 					strategies[j].get(),
 					strategies[k].get()

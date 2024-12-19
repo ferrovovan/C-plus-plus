@@ -25,7 +25,7 @@ private:
 	// Проведение одного раунда
 	Choices play_round();
 	void simulate_round(ChoiceHistory& choices_history, ScoreList& total_scores);
-	ScoreList play_custom_round(
+	ScoreList play_custom_match(
 		Strategy* player1, Strategy* player2, Strategy* player3
 	);
 	// Обновление общего счёта
