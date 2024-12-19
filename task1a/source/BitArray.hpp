@@ -6,93 +6,233 @@
 #include <stdexcept>
 
 
-// Класс BitArray представляет динамический битовый массив,
-// позволяющий выполнять различные побитовые операции.
+// Класс для представления динамического битового массива с поддержкой битовых операций.
 class BitArray {
 private:
-	std::vector<unsigned char> bits; // Вектор для хранения битов в виде байтов.
-	int num_bits; // Количество бит в массиве.
+    std::vector<unsigned char> bits; // Хранилище битов в байтах.
+    int num_bits;                    // Текущее количество битов в массиве.
+
 public:
-	BitArray(); // конструктор по умолчанию. создаёт пустой битовый массив.
-	~BitArray(); // Деструктор по умолчанию
+    /** Default constructor.
+     * Constructs an empty bit array with no elements. */
+    BitArray();
 
-	// Конструктор, создающий массив с заданным количеством бит.
-	// Параметр value используется для инициализации первых sizeof(long) бит.
-	explicit BitArray(int num_bits, unsigned long value = 0);
+    /** Default destructor. */
+    ~BitArray();
 
-	// Конструктор копирования.
-	BitArray(const BitArray& other);
+    /** Constructs a bit array of specified size.
+     * All bits are initialized to `false`, unless the `value` is provided.
+     * @param num_bits The number of bits in the array.
+     * @param value The initial value for the first `sizeof(long)` bits (optional).
+     * @throws std::invalid_argument if `num_bits` is negative.
+     */
+    explicit BitArray(int num_bits, unsigned long value = 0);
 
-	// Метод для обмена значений двух битовых массивов.
-	void swap(BitArray& other);
+    /** Copy constructor.
+     * Creates a new bit array as a copy of the given bit array.
+     * @param other Another BitArray instance to copy. */
+    BitArray(const BitArray& other);
 
-	// Оператор присваивания.
-	BitArray& operator=(const BitArray& other);
+    /** Swaps the contents of this array with another one.
+     * This is a constant time operation.
+     * @param other Another BitArray to swap with. */
+    void swap(BitArray& other);
 
-	// Тесты операций с массивом
+    /** Assignment operator.
+     * Replaces the contents of this array with those of another one.
+     * @param other Another BitArray instance.
+     * @return Reference to the updated bit array. */
+    BitArray& operator=(const BitArray& other);
 
-	// Изменяет размер битового массива. Новые биты инициализируются значением value.
-	void resize(int new_num_bits, bool value = false);
-	void clear(); // Очищает битовый массив.
-	void push_back(bool bit); // Добавляет новый бит в конец массива.
+    /** Resizes the bit array to contain a specified number of bits.
+     * New bits, if added, are initialized to the specified value.
+     * @param new_num_bits The desired size of the bit array.
+     * @param value The value for new bits (optional, defaults to `false`). */
+    void resize(int new_num_bits, bool value = false);
 
+    /** Clears the bit array, making it empty. */
+    void clear();
 
-	//Битовые операции над массивами.
-	//Работают только на массивах одинакового размера.
+    /** Appends a bit to the end of the bit array.
+     * @param bit The value of the bit to append (true or false). */
+    void push_back(bool bit);
 
-	// Оператор побитового И с присваиванием (&=).
-	BitArray& operator&=(const BitArray& other);
-	// Оператор побитового ИЛИ с присваиванием (|=).
-	BitArray& operator|=(const BitArray& other);
-	// Оператор побитового исключающего ИЛИ с присваиванием (^=).
-	BitArray& operator^=(const BitArray& other);
+    // Bitwise operations
 
-	// Операторы битовый сдвига с заполнением нулями.
+    /** Bitwise AND assignment (operator &=).
+     * Performs an AND operation element-wise between this array and another.
+     * Arrays must be of the same size.
+     * @param other Another BitArray instance.
+     * @return Reference to the updated bit array.
+     * @throws std::invalid_argument if arrays differ in size. */
+    BitArray& operator&=(const BitArray& other);
 
-	BitArray& operator<<=(int n); // Оператор сдвига влево с присваиванием (<<=).
-	BitArray& operator>>=(int n); // Оператор сдвига вправо с присваиванием (>>=).
-	BitArray operator<<(int n) const; // Оператор сдвига влево без изменения исходного массива (<<).
-	BitArray operator>>(int n) const; // Оператор сдвига вправо без изменения исходного массива (>>).
+    /** Bitwise OR assignment (operator |=).
+     * Performs an OR operation element-wise between this array and another.
+     * Arrays must be of the same size.
+     * @param other Another BitArray instance.
+     * @return Reference to the updated bit array.
+     * @throws std::invalid_argument if arrays differ in size. */
+    BitArray& operator|=(const BitArray& other);
 
-	// Установление состояния.
+    /** Bitwise XOR assignment (operator ^=).
+     * Performs an XOR operation element-wise between this array and another.
+     * Arrays must be of the same size.
+     * @param other Another BitArray instance.
+     * @return Reference to the updated bit array.
+     * @throws std::invalid_argument if arrays differ in size. */
+    BitArray& operator^=(const BitArray& other);
 
-	BitArray& set(int n, bool val = true); // Устанавливает бит с индексом n в значение val.
-	BitArray& set(); // Заполняет весь массив единичными битами (истина).
-	BitArray& reset(int n); // Сбрасывает бит с индексом n (устанавливает его в ложь).
-	BitArray& reset(); // Заполняет весь массив нулями (ложь).
+    // Bit shifting
 
-	// Считывание состояния.
-	
-	bool any() const; // Возвращает true, если в массиве есть хотя бы один бит, равный истине.
-	bool none() const; // Возвращает true, если все биты в массиве равны лжи.
+    /** Left shift assignment (operator <<=).
+     * Shifts all bits in the array to the left by the specified number of positions.
+     * Zeros are filled on the right.
+     * @param n Number of positions to shift.
+     * @return Reference to the updated bit array. */
+    BitArray& operator<<=(int n);
 
-	BitArray operator~() const; // Оператор побитовой инверсии (~).
+    /** Right shift assignment (operator >>=).
+     * Shifts all bits in the array to the right by the specified number of positions.
+     * Zeros are filled on the left.
+     * @param n Number of positions to shift.
+     * @return Reference to the updated bit array. */
+    BitArray& operator>>=(int n);
 
-	int count() const; // Подсчитывает количество битов, равных единице.
+    /** Left shift (operator <<).
+     * Creates a new bit array with all bits shifted to the left.
+     * Zeros are filled on the right.
+     * @param n Number of positions to shift.
+     * @return New BitArray instance with shifted bits. */
+    BitArray operator<<(int n) const;
 
-	bool operator[](int n) const; // Оператор доступа к биту по индексу (читает значение бита).
+    /** Right shift (operator >>).
+     * Creates a new bit array with all bits shifted to the right.
+     * Zeros are filled on the left.
+     * @param n Number of positions to shift.
+     * @return New BitArray instance with shifted bits. */
+    BitArray operator>>(int n) const;
 
-	int size() const; // Возвращает количество бит в массиве.
+    // State modification
 
-	bool empty() const; // Проверяет, пустой ли массив (количество бит равно 0).
+    /** Sets the bit at the specified index to the provided value.
+     * @param n Index of the bit.
+     * @param val Value to assign (true or false, defaults to `true`).
+     * @return Reference to the updated bit array.
+     * @throws std::out_of_range if the index is invalid. */
+    BitArray& set(int n, bool val = true);
 
-	std::string to_string() const; // Возвращает строковое представление битового массива (например, "101010").
+    /** Sets all bits in the array to 1 (true).
+     * @return Reference to the updated bit array. */
+    BitArray& set();
 
-	// Дружественные функции для сравнения массивов.
-	friend bool operator==(const BitArray& a, const BitArray& b);
-	friend bool operator!=(const BitArray& a, const BitArray& b);
+    /** Resets (clears) the bit at the specified index.
+     * @param n Index of the bit.
+     * @return Reference to the updated bit array.
+     * @throws std::out_of_range if the index is invalid. */
+    BitArray& reset(int n);
+
+    /** Resets all bits in the array to 0 (false).
+     * @return Reference to the updated bit array. */
+    BitArray& reset();
+
+    // State inspection
+
+    /** Checks if any bit in the array is set (true).
+     * @return `true` if at least one bit is true, otherwise `false`. */
+    bool any() const;
+
+    /** Checks if all bits in the array are clear (false).
+     * @return `true` if all bits are false, otherwise `false`. */
+    bool none() const;
+
+    /** Bitwise NOT (operator ~).
+     * Produces a new array with all bits inverted.
+     * @return New BitArray instance. */
+    BitArray operator~() const;
+
+    /** Counts the number of bits set to 1 (true) in the array.
+     * @return Number of true bits. */
+    int count() const;
+
+    /** Accesses a bit at the specified index (read-only).
+     * @param n Index of the bit.
+     * @return The value of the bit (true or false).
+     * @throws std::out_of_range if the index is invalid. */
+    bool operator[](int n) const;
+
+    /** Retrieves the number of bits in the array.
+     * @return Number of bits. */
+    int size() const;
+
+    /** Checks if the array is empty (contains no bits).
+     * @return `true` if empty, otherwise `false`. */
+    bool empty() const;
+
+    /** Converts the bit array to its string representation.
+     * Example: "101010"
+     * @return String representation of the bit array. */
+    std::string to_string() const;
+
+    // Friends for comparison
+    /** Compares two bit arrays for equality. */
+    friend bool operator==(const BitArray& a, const BitArray& b);
+
+    /** Compares two bit arrays for inequality. */
+    friend bool operator!=(const BitArray& a, const BitArray& b);
 };
 
-// Оператор сравнения двух битовых массивов (равенство).
+/** Compares two bit arrays for equality.
+ * Two bit arrays are considered equal if they have the same size
+ * and identical bit values for all indices.
+ * @param a The first BitArray to compare.
+ * @param b The second BitArray to compare.
+ * @return `true` if the arrays are equal, otherwise `false`.
+ */
 bool operator==(const BitArray& a, const BitArray& b);
 
-// Оператор сравнения двух битовых массивов (неравенство).
+/** Compares two bit arrays for inequality.
+ * Two bit arrays are considered unequal if they differ in size
+ * or in any bit value.
+ * @param a The first BitArray to compare.
+ * @param b The second BitArray to compare.
+ * @return `true` if the arrays are not equal, otherwise `false`.
+ */
 bool operator!=(const BitArray& a, const BitArray& b);
 
-// Операторы побитовых операций для массивов (и, или, исключающее или).
+/** Performs a bitwise AND operation between two bit arrays.
+ * Produces a new bit array where each bit is the result of the AND
+ * operation on the corresponding bits of the input arrays.
+ * Both arrays must be of the same size.
+ * @param b1 The first BitArray operand.
+ * @param b2 The second BitArray operand.
+ * @return A new BitArray containing the result of the AND operation.
+ * @throws std::invalid_argument if the arrays are of different sizes.
+ */
 BitArray operator&(const BitArray& b1, const BitArray& b2);
+
+/** Performs a bitwise OR operation between two bit arrays.
+ * Produces a new bit array where each bit is the result of the OR
+ * operation on the corresponding bits of the input arrays.
+ * Both arrays must be of the same size.
+ * @param b1 The first BitArray operand.
+ * @param b2 The second BitArray operand.
+ * @return A new BitArray containing the result of the OR operation.
+ * @throws std::invalid_argument if the arrays are of different sizes.
+ */
 BitArray operator|(const BitArray& b1, const BitArray& b2);
+
+/** Performs a bitwise XOR operation between two bit arrays.
+ * Produces a new bit array where each bit is the result of the XOR
+ * operation on the corresponding bits of the input arrays.
+ * Both arrays must be of the same size.
+ * @param b1 The first BitArray operand.
+ * @param b2 The second BitArray operand.
+ * @return A new BitArray containing the result of the XOR operation.
+ * @throws std::invalid_argument if the arrays are of different sizes.
+ */
 BitArray operator^(const BitArray& b1, const BitArray& b2);
+
 
 #endif // BITARRAY_H
 
