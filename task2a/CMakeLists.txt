@@ -23,6 +23,6 @@ target_compile_options(PrisonersDilemmaSim PRIVATE -Wall -pedantic)
 option(BUILD_TESTS "Build tests" ON)
 
 if(BUILD_TESTS)
-    enable_testing()
-    add_subdirectory(tests)
+	enable_testing()
+	add_subdirectory(tests)
 endif()
