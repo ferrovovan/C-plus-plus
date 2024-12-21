@@ -12,7 +12,7 @@ matrix_dir="./config/matrices/"
 Default_matrix=1
 if [ $Default_matrix -eq 1 ]; then
 	echo_green "Default matrix"
-	./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye RandomChoice --mode=tournament
+	./build/PrisonersDilemmaSim AlwaysCooperate AlwaysDefect Eye4Eye RandomChoice ConsensusMetaStrategy --mode=tournament
 fi
 
 Balanced_Trade_off=0

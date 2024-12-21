@@ -2,6 +2,7 @@
 #define STRATEGYFACTORY_HPP
 
 #include "Strategy.hpp"
+#include "MetaStrategy.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>

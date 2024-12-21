@@ -9,11 +9,16 @@
 
 /* Нетривиальные стратегии */
 #include "concrete/AdaptiveCooperator/AdaptiveCooperator.hpp"
+#include "concrete/ConsensusMetaStrategy.cpp"
+
+#include <memory>  // для std::move и std::make_unique
+using Strategies_vector = std::vector<std::unique_ptr<Strategy>>;
+using Creators_map = std::unordered_map<std::string, StrategyFactory::StrategyCreator>;
 
 
 // Получение словаря зарегистрированных стратегий
-std::unordered_map<std::string, StrategyFactory::StrategyCreator>& StrategyFactory::getCreators() {
-	static std::unordered_map<std::string, StrategyCreator> creators;
+Creators_map& StrategyFactory::getCreators() {
+	static Creators_map creators;
 	return creators;
 }
 
@@ -52,6 +57,12 @@ namespace {  // Анонимное пространство имён
 		StrategyFactory::registerStrategy("AdaptiveCooperator", [](const std::string& config_path) {
 			return std::make_unique<AdaptiveCooperator>(config_path);  // Передача config_path
 		});
+
+		StrategyFactory::registerStrategy("ConsensusMetaStrategy", [](const std::string& config_path) {
+			return std::make_unique<ConsensusMetaStrategy>();
+		});
+
+
 		return true;
 	}
 

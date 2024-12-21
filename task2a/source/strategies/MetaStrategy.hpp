@@ -10,15 +10,11 @@ using StrategyNames = std::vector<std::string>;
 
 class MetaStrategy : public Strategy {
 public:
-	explicit MetaStrategy(const std::string& strategy_name, Strategies_vector* subStrategies)
-	: Strategy(strategy_name) {
-		// Перемещение элементов из subStrategies в subStrategies текущего объекта
-		for (std::unique_ptr<Strategy>& strategy : *subStrategies) {
-		this->subStrategies.push_back(std::move(strategy));
-		}
-	}
+	virtual ~MetaStrategy() = default;
+	explicit MetaStrategy(const std::string& strategy_name)
+	: Strategy(strategy_name) {};
 
-	Decision decide(const ChoiceHistory& history);
+	virtual Decision decide(const ChoiceHistory& history) = 0;
 
 protected:
 	Strategies_vector subStrategies;
