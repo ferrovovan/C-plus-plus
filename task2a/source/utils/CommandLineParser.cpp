@@ -9,7 +9,7 @@ SimulationParams CommandLineParser::parse(int argc, char* argv[]) {
 
 	// Разбор аргументов командной строки
 	auto args = parseArguments(argc, argv);
-	// auto = std::map<std::string, std::string>
+	// auto = ArgsMap
 
 	// Обработка каждого параметра
 	if (args.count("strategies")) {
@@ -44,8 +44,8 @@ SimulationParams CommandLineParser::parse(int argc, char* argv[]) {
 	return params;
 }
 
-std::map<std::string, std::string> CommandLineParser::parseArguments(int argc, char* argv[])   {
-	std::map<std::string, std::string> args;
+ArgsMap CommandLineParser::parseArguments(int argc, char* argv[])   {
+	ArgsMap args;
 
 	for (int i = 1; i < argc; ++i) {
 		std::string arg = argv[i];
@@ -75,48 +75,49 @@ void CommandLineParser::parse_Strategies(const std::string& strategiesStr, Simul
 
 void CommandLineParser::validateStrategies(const SimulationParams& params)   {
 	if (params.strategies.size() < 3) {
-		std::cerr << "Ошибка: недостаточно стратегий. Укажите минимум три." << std::endl;
-		exit(1);
+		throw std::invalid_argument("Недостаточно стратегий. Укажите минимум три.");
 	}
 }
 
-void CommandLineParser::parse_Mode(const std::map<std::string, std::string>& args, SimulationParams& params)   {
+void CommandLineParser::parse_Mode(const ArgsMap& args, SimulationParams& params)   {
 	params.mode = args.at("--mode");
 	if (params.mode != "detailed" && params.mode != "fast" && params.mode != "tournament") {
 		std::cerr << "Ошибка: режим симуляции должен быть одним из [detailed|fast|tournament]." << std::endl;
-		throw "mode choice error";
+		throw std::invalid_argument("mode choice error");
 	}
 	if (params.mode == "tournament" and params.strategies.size() < 4) {
-		std::cerr << "Ошибка: при выборе \"tournament\". Должно быть больше 3 стратегий." << std::endl;
-		throw "mode choice error";
+		throw std::invalid_argument("Ошибка: при выборе \"tournament\". Должно быть больше 3 стратегий.");
 	}
 	if (params.mode != "tournament" and params.strategies.size() != 3) {
-		std::cerr << "Ошибка: при выборе \"" << params.mode << "\". Должно быть ровно 3 стратегий." << std::endl;
-		throw "mode choice error";
+		throw std::invalid_argument("Ошибка: при выборе \"" + params.mode + "\". Должно быть ровно 3 стратегий.");
 	}
 }
 
-void CommandLineParser::parse_Steps(const std::map<std::string, std::string>& args, SimulationParams& params)   {
+void CommandLineParser::debug_args(const ArgsMap& args) {
+	for (const auto& arg : args) {
+		std::cout << "Arg: " << arg.first << " Value: " << arg.second << std::endl;
+	}
+}
+
+void CommandLineParser::parse_Steps(const ArgsMap& args, SimulationParams& params)
+{
 	params.steps = std::stoi(args.at("--steps"));
 	if (params.steps <= 0) {
-		std::cerr << "Ошибка: количество шагов должно быть положительным числом." << std::endl;
-		exit(1);
+		throw std::invalid_argument("Ошибка: количество шагов должно быть положительным числом.");
 	}
 }
 
-void CommandLineParser::parse_ConfigDir(const std::map<std::string, std::string>& args, SimulationParams& params)   {
+void CommandLineParser::parse_ConfigDir(const ArgsMap& args, SimulationParams& params)   {
 	params.configDir = args.at("--configs");
 	if (!std::filesystem::is_directory(params.configDir)) {
-		std::cerr << "Ошибка: указанная директория конфигурации не существует." << std::endl;
-		exit(1);
+		throw std::invalid_argument("Ошибка: указанная директория конфигурации не существует.");
 	}
 }
 
-void CommandLineParser::parse_MatrixFile(const std::map<std::string, std::string>& args, SimulationParams& params)   {
+void CommandLineParser::parse_MatrixFile(const ArgsMap& args, SimulationParams& params)   {
 	params.matrixFile = args.at("--matrix");
 	if (!std::filesystem::exists(params.matrixFile)) {
-		std::cerr << "Ошибка: указанный файл матрицы не найден." << std::endl;
-		exit(1);
+		throw std::invalid_argument("Ошибка: указанный файл матрицы не найден.");
 	}
 }
 
