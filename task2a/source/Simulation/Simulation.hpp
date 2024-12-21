@@ -16,15 +16,20 @@ using Strategies_vector = std::vector<std::unique_ptr<Strategy>>;
 
 class Simulation {
 private:
-	std::vector<std::unique_ptr<Strategy>> strategies; // Стратегии участников
+	Strategies_vector strategies; // Стратегии участников
 	GameMatrix game_matrix;                            // Матрица игры
-	History history;                                   // История игры
 	int steps;                                         // Количество шагов (раундов)
 	Renderer renderer;
 
+	StrategyNames get_names() const;
+	StrategyNames get_names(Strategy* player1, Strategy* player2, Strategy* player3) const;
+
+	Choices get_choices(const History& history) const;
+	Choices get_choices(const History& history, Strategy* player1, Strategy* player2, Strategy* player3) const;
+
 	// Проведение одного раунда
-	Choices play_round();
-	void simulate_round(ChoiceHistory& choices_history, ScoreList& total_scores);
+	Choices play_round(History& history) const;
+	void simulate_round(History& history, ScoreList& total_scores);
 	ScoreList play_custom_match(
 		Strategy* player1, Strategy* player2, Strategy* player3
 	);

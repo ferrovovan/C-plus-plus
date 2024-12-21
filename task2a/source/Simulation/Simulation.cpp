@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 Simulation::Simulation(
-	std::vector<std::unique_ptr<Strategy>> strategies,
+	Strategies_vector strategies,
 	const std::string& file_path,
 	int simulation_steps)
 	: strategies(std::move(strategies)),
@@ -12,21 +12,20 @@ Simulation::Simulation(
 	renderer() {}
 
 // Проведение одного раунда
-Choices Simulation::play_round() {
-	Choices current_choices;
-	for (auto& strategy : strategies) {
-		current_choices.push_back(strategy->decide(history.get_history()));
-	}
+Choices Simulation::play_round(History& history) const{
+	Choices current_choices = get_choices(history);
+
 	history.add_round(current_choices);
 	return current_choices;
 }
 
-void Simulation::simulate_round(ChoiceHistory& choices_history, ScoreList& total_scores) {
-	Choices round_choices = play_round();
+void Simulation::simulate_round(History& history, ScoreList& total_scores) {
+	// Получение хронологии
+	Choices round_choices = play_round(history);
 	auto round_scores = game_matrix.calculate_scores(round_choices);
 
-	// Обновление исторических данных
-	choices_history.push_back(round_choices);
+	// Обновление хронологии
+	history.add_round(round_choices);
 	for (size_t i = 0; i < total_scores.size(); ++i) {
 		total_scores[i] += round_scores[i];
 	}
@@ -45,16 +44,16 @@ void Simulation::run_detailed_mode() {
 	renderer.render_detailed_table_header(strategy_names);
 
 	// Инициализация истории и счёта
-	ChoiceHistory choices_history;
+	History history(get_names());
 	ScoreList total_scores(strategies.size(), 0);
 
 	// Симуляция раундов
 	size_t num_strategies = strategy_names.size(); // Количество стратегий
 	for (int step = 0; step < steps; ++step) {
-		simulate_round(choices_history, total_scores);
+		simulate_round(history, total_scores);
 		renderer.clear_strings(num_strategies + 4);
 		renderer.render_detailed_output(
-			step + 1, choices_history.back(), total_scores, strategy_names);
+			step + 1, history.get_last_moves(), total_scores, strategy_names);
 		std::cout << "Нажмите \"Enter\" клавишу, чтобы продолжить..." << std::endl;
 		std::cin.get();
 	}
@@ -68,9 +67,10 @@ void Simulation::run_detailed_mode() {
 // Симуляция нескольких раундов
 RoundScores Simulation::simulate_rounds(int steps, ScoreList& total_scores) {
 	RoundScores detailed_results;
+	History history(get_names());
 
 	for (int i = 0; i < steps; ++i) {
-		Choices round_choices = play_round();
+		Choices round_choices = play_round(history);
 		auto scores = game_matrix.calculate_scores(round_choices);
 
 		// Обновление общего счёта
@@ -90,24 +90,42 @@ void Simulation::run_fast_mode() {
 
 	ScoreList total_scores(strategies.size(), 0);
 	simulate_rounds(steps, total_scores);
-	StrategyNames strategy_names;
-	for (const auto& strategy : strategies) {
-		strategy_names.push_back(strategy->get_name());
-	}
+	StrategyNames strategy_names = get_names();
 	renderer.render_fast_output(strategy_names, total_scores);
+}
+
+Choices Simulation::get_choices(const History& history) const {
+	Choices choices;
+	for (auto& strategy : strategies) {
+		choices.push_back(
+			strategy->decide(
+				history.get_oponents_moves(
+					strategy->get_name()
+				)
+			)
+		);
+	}
+	return choices;
+}
+
+Choices Simulation::get_choices(const History& history, Strategy* player1, Strategy* player2, Strategy* player3) const {
+	Choices choices = {
+		player1->decide(history.get_oponents_moves(player1->get_name())),
+		player2->decide(history.get_oponents_moves(player2->get_name())),
+		player3->decide(history.get_oponents_moves(player3->get_name()))
+	};
+	return choices;
 }
 
 // Проведение матча с тремя стратегиями
 ScoreList Simulation::play_custom_match(Strategy* player1, Strategy* player2, Strategy* player3) {
-	History round_history;
+	History round_history(
+		get_names(player1, player2, player3)
+	);
 	ScoreList scores_for_match(3, 0);
 
 	for (int step = 0; step < steps; ++step) {
-		Choices choices = {
-			player1->decide(round_history.get_history()),
-			player2->decide(round_history.get_history()),
-			player3->decide(round_history.get_history())
-		};
+		Choices choices = get_choices(round_history, player1, player2, player3);
 
 		round_history.add_round(choices);
 		ScoreList round_scores = game_matrix.calculate_scores(choices);
@@ -124,6 +142,22 @@ void Simulation::add_total_score(ScoreList& scores_for_match,
 	total_scores[i] += scores_for_match[0];
 	total_scores[j] += scores_for_match[1];
 	total_scores[k] += scores_for_match[2];
+}
+
+StrategyNames Simulation::get_names() const {
+	StrategyNames strategy_names;
+	for (const auto& strategy : strategies) {
+		strategy_names.push_back(strategy->get_name());
+	}
+	return strategy_names;
+}
+
+StrategyNames Simulation::get_names(Strategy* player1, Strategy* player2, Strategy* player3) const {
+	StrategyNames strategy_names;
+	strategy_names.push_back(player1->get_name());
+	strategy_names.push_back(player2->get_name());
+	strategy_names.push_back(player3->get_name());
+	return strategy_names;
 }
 
 // Режим турнира
