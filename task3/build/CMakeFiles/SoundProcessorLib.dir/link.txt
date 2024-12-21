@@ -1,0 +1,2 @@
+/usr/bin/ar qc libSoundProcessorLib.a CMakeFiles/SoundProcessorLib.dir/source/WAV_channel.cpp.o CMakeFiles/SoundProcessorLib.dir/source/converter.cpp.o CMakeFiles/SoundProcessorLib.dir/source/editor.cpp.o CMakeFiles/SoundProcessorLib.dir/source/main.cpp.o CMakeFiles/SoundProcessorLib.dir/source/parser.cpp.o
+/usr/bin/ranlib libSoundProcessorLib.a

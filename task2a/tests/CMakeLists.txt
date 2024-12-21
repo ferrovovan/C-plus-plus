@@ -1,11 +1,19 @@
-# Найдем GoogleTest
+# Найдём GoogleTest
 find_package(GTest REQUIRED)
 
-# Создаем исполнимый файл для тестов
-add_executable(PrisonersDilemmaTest test_Utils.cpp)
+# Создаём исполняемый файл для всех тестов
+add_executable(PrisonersDilemmaTest
+	test_Utils.cpp
+	test_GameMatrix.cpp
+)
 
-# Линкуем только бизнес-логику, а не весь проект
-target_link_libraries(PrisonersDilemmaTest PRIVATE CommandLineParser_Lib GTest::GTest GTest::Main)
+# Линкуем зависимости
+target_link_libraries(PrisonersDilemmaTest PRIVATE
+	CommandLineParser_Lib
+	GameMatrix_Lib
+	GTest::GTest
+	GTest::Main
+)
 
 # Добавляем тесты в CTest
 add_test(NAME PrisonersDilemmaTest COMMAND PrisonersDilemmaTest)

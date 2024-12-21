@@ -13,7 +13,7 @@ public:
 	using MatrixMap = std::unordered_map<Key, int>;
 
 	// Конструкторы
-	explicit MatrixReader();
+	MatrixReader();
 	explicit MatrixReader(const std::string& file_path);
 
 	// Получение результата для конкретного сочетания

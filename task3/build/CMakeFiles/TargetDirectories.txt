@@ -1,0 +1,4 @@
+/home/vovan/University/CPP/task3/build/CMakeFiles/SoundProcessorLib.dir
+/home/vovan/University/CPP/task3/build/CMakeFiles/SoundProcessor.dir
+/home/vovan/University/CPP/task3/build/CMakeFiles/edit_cache.dir
+/home/vovan/University/CPP/task3/build/CMakeFiles/rebuild_cache.dir

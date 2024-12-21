@@ -61,8 +61,9 @@ int MatrixReader::getResult(char prisoner_choice, int amogus_count) const {
 		return it->second;
 	}
 	throw std::out_of_range("Нет данных для заданного сочетания: " +
-							std::string(1, prisoner_choice) + ", " +
-							std::to_string(amogus_count));
+		std::string(1, prisoner_choice) + ", " +
+		std::to_string(amogus_count)
+	);
 }
 
 const MatrixReader::MatrixMap& MatrixReader::getMatrix() const {
